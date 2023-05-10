@@ -1,5 +1,3 @@
-import database from './fdc_database.json'
-import databaseFoundation from './fdc_database_foundation.json'
 import { NutrientDose, Product, Nutrient, NutrientUnit, Micronutrient, Macronutrient, NutrientAmount } from "./types/nutrient"
 
 const foodNutrientToMicronutrient: { [key: string]: Micronutrient } = {
@@ -95,9 +93,9 @@ function nutrientAmount(value: number, stringUnit: string, name: string): Nutrie
 function parseNutrientDose(food: any): NutrientDose | undefined {
     const nutrient = nutrientNameToEnum(food.nutrient.name)
     const amount = nutrientAmount(food.amount, food.nutrient.unitName, food.nutrient.name)
-    if (amount <= 0) return undefined
 
     if (!nutrient || !amount) return undefined
+    if (amount!.value <= 0) return undefined
 
     return {
         nutrient,
@@ -144,7 +142,7 @@ function compareProductsByNutrient(nutrient: Nutrient) {
 
 function filterHasNutrient(nutrient: Nutrient) {
     return function hasNutrient(product: Product) {
-        return product.nutrientsPer100g?.findIndex(n => n.nutrient === nutrient) > -1
+        return product.nutrientsPer100g && product.nutrientsPer100g!.findIndex(n => n.nutrient === nutrient) > -1
     }
 }
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { setup as setupGoober, styled } from 'goober'
-import { NutrientAmount, NutrientDose, NutrientUnit, allNutrients, Micronutrient, ProductDose } from "./types/nutrient";
+import { NutrientAmount, NutrientDose, NutrientUnit, allNutrients, Micronutrient, ProductDose, Product } from "./types/nutrient";
 import { nutrientsMan32 } from "./types/doses";
 import { athelticGreensDoses, atheticGreensOneServing } from "./types/products";
 import NutrientList from "./NutrientList";
@@ -107,11 +107,11 @@ const Row = styled('div')`
 `
 
 function getNutrientDosesFromProductDose(pd: ProductDose): NutrientDose[] {
-  if (pd.servings !== undefined && pd.servings > 0) {
-    return pd.product.nutrientsPerServing?.map(n => ({ nutrient: n.nutrient, amount: { value: n.amount.value * pd.servings, unit: n.amount.unit } }))
+  if (pd.servings !== undefined && pd.servings > 0 && pd.product.nutrientsPerServing) {
+    return pd.product.nutrientsPerServing!.map(n => ({ nutrient: n.nutrient, amount: { value: n.amount.value * pd.servings!, unit: n.amount.unit } }))
   }
-  if (pd.grams !== undefined && pd.grams > 0) {
-    return pd.product.nutrientsPer100g?.map(n => ({ nutrient: n.nutrient, amount: { value: n.amount.value * pd.grams / 100, unit: n.amount.unit } }))
+  if (pd.grams !== undefined && pd.grams > 0 && pd.product.nutrientsPer100g) {
+    return pd.product.nutrientsPer100g!.map(n => ({ nutrient: n.nutrient, amount: { value: n.amount.value * pd.grams! / 100, unit: n.amount.unit } }))
   }
   return []
 }
@@ -131,23 +131,23 @@ function App() {
   const [fetchingDatabase] = useFetchDatabase()
   const [searchPhrase, onSearchChange, setSearchPhrase] = useDebouncedInput()
   const [selectedNutrient, setSelectedNutrient] = useState()
-  const [selectedProduct, setSelectedProduct] = useState()
+  const [selectedProduct, setSelectedProduct] = useState<Product | undefined>()
   const [productDoses, setProductDoses] = useState([atheticGreensOneServing])
 
-  const onNutrientSelectChange = (e) => {
+  const onNutrientSelectChange = (e: any) => {
     setSelectedNutrient(e.target.value)
   }
-  const onAddProductClick = product => {
+  const onAddProductClick = (product: Product) => {
     setProductDoses([...productDoses, { product, grams: 100 }])
   }
-  const onRemoveProductDoseClick = productDose => {
+  const onRemoveProductDoseClick = (productDose: ProductDose) => {
     const doseIndex = productDoses.indexOf(productDose)
     setProductDoses([...productDoses.slice(0, doseIndex), ...productDoses.slice(doseIndex + 1)])
   }
-  const onProductClick = product => setSelectedProduct(product)
-  const onProductDoseClick = productDose => setSelectedProduct(productDose.product)
+  const onProductClick = (product: Product) => setSelectedProduct(product)
+  const onProductDoseClick = (productDose: ProductDose) => setSelectedProduct(productDose.product)
 
-  const productsFound = productsDatabase.getFood(searchPhrase)
+  const productsFound = searchPhrase ? productsDatabase.getFood(searchPhrase as any as string) : undefined
   const topNutrientProducts = selectedNutrient ? productsDatabase.getFoodsWithMost(selectedNutrient, 50) : undefined
   const displayProducts = productsFound ? productsFound : topNutrientProducts
 

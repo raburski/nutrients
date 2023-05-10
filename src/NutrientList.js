@@ -36,7 +36,7 @@ function NutrientRow({ nutrient, showName, nutrientDose = {} }) {
     )
 }
 
-export default function NutrientList({ nutrientDoses = [], showNames, onlyProvided }) {
+export default function NutrientList({ nutrientDoses = [], showNames = false, onlyProvided = false }) {
     const nutrients = onlyProvided ? nutrientDoses.map(d => d.nutrient) : allNutrients
     return (
         <Container>
