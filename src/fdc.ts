@@ -131,16 +131,6 @@ function isBasicFood(f: any) {
         && !f.wweiaFoodCategory.wweiaFoodCategoryDescription.toLowerCase().includes('not included in a food category')
 }
 
-const foods = [...database.SurveyFoods, ...databaseFoundation.FoundationFoods] as any[]
-const foodProducts = foods.filter(isBasicFood).map(parseFood)
-
-export function getFood(name: string) {
-    if (!name) return undefined
-    const lowerCaseName = name.toLowerCase()
-    const db_foods = foods.filter(f => f.description.toLowerCase().includes(lowerCaseName))
-    return db_foods.map(parseFood)
-}
-
 function compareProductsByNutrient(nutrient: Nutrient) {
     return function compareProducts(a: Product, b: Product) {
         const aNutrient = a.nutrientsPer100g?.find(n => n.nutrient === nutrient)
@@ -158,10 +148,57 @@ function filterHasNutrient(nutrient: Nutrient) {
     }
 }
 
-export function getFoodsWithMost(nutrient: Nutrient, limit = 20): Product[] {
-    const products = [...foodProducts].filter(filterHasNutrient(nutrient))
-    products.sort(compareProductsByNutrient(nutrient))
-    return products.slice(0, limit)
+const DB_1_FILE = '/fdc_database.json'
+const DB_2_FILE = '/fdc_database_foundation.json'
+
+export class ProductsDatabase {
+    foodProducts: any[]
+    isLoaded: Boolean
+
+    constructor() {
+        this.foodProducts = []
+        this.isLoaded = false
+
+        this.loadFromLocalStorage()
+    }
+
+    saveToLocalStorage() {
+        const json = JSON.stringify(this.foodProducts)
+        localStorage.setItem('food_products', json)
+    }
+
+    loadFromLocalStorage() {
+        const stored = localStorage.getItem('food_products')
+        if (!stored) return
+
+        this.foodProducts = JSON.parse(stored)
+        this.isLoaded = true
+    }
+
+    async fetchDatabase() {
+        const db1Response = await fetch(DB_1_FILE)
+        const db2Response = await fetch(DB_2_FILE)
+        const db1Json = await db1Response.json()
+        const db2Json = await db2Response.json()
+
+        const foods = [...db1Json.SurveyFoods, ...db2Json.FoundationFoods] as any[]
+        this.foodProducts = foods.filter(isBasicFood).map(parseFood)
+        this.isLoaded = true
+        this.saveToLocalStorage()
+    }
+    
+    getFood(name: string) {
+        if (!name) return undefined
+        const lowerCaseName = name.toLowerCase()
+        return this.foodProducts.filter(f => f.name.toLowerCase().includes(lowerCaseName))
+    }
+
+    getFoodsWithMost(nutrient: Nutrient, limit = 20): Product[] {
+        const products = [...this.foodProducts].filter(filterHasNutrient(nutrient))
+        products.sort(compareProductsByNutrient(nutrient))
+        return products.slice(0, limit)
+    }
 }
 
-export default {}
+
+export default new ProductsDatabase()

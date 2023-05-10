@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { setup as setupGoober, styled } from 'goober'
@@ -6,13 +6,14 @@ import { NutrientAmount, NutrientDose, NutrientUnit, allNutrients, Micronutrient
 import { nutrientsMan32 } from "./types/doses";
 import { athelticGreensDoses, atheticGreensOneServing } from "./types/products";
 import NutrientList from "./NutrientList";
-import { getFood, getFoodsWithMost } from "./fdc";
+import productsDatabase from "./fdc";
 import useDebouncedInput from "./useDebouncedInput";
 import TextField from "./TextField";
 import ProductList from "./ProductList";
 import ProductDosesList from "./ProductDosesList";
 import Modal from "./Modal";
 import ProductInfo from "./ProductInfo";
+import FetchingDatabase from "./FetchingDatabase";
 
 setupGoober(React.createElement)
 
@@ -115,7 +116,19 @@ function getNutrientDosesFromProductDose(pd: ProductDose): NutrientDose[] {
   return []
 }
 
+function useFetchDatabase() {
+  const [fetching, setFetching] = useState(false)
+  useEffect(() => {
+    if (productsDatabase.isLoaded) return
+
+    setFetching(true)
+    productsDatabase.fetchDatabase().then(() => setFetching(false))
+  }, [])
+  return [fetching]
+}
+
 function App() {
+  const [fetchingDatabase] = useFetchDatabase()
   const [searchPhrase, onSearchChange, setSearchPhrase] = useDebouncedInput()
   const [selectedNutrient, setSelectedNutrient] = useState()
   const [selectedProduct, setSelectedProduct] = useState()
@@ -134,8 +147,8 @@ function App() {
   const onProductClick = product => setSelectedProduct(product)
   const onProductDoseClick = productDose => setSelectedProduct(productDose.product)
 
-  const productsFound = getFood(searchPhrase)
-  const topNutrientProducts = selectedNutrient ? getFoodsWithMost(selectedNutrient, 50) : undefined
+  const productsFound = productsDatabase.getFood(searchPhrase)
+  const topNutrientProducts = selectedNutrient ? productsDatabase.getFoodsWithMost(selectedNutrient, 50) : undefined
   const displayProducts = productsFound ? productsFound : topNutrientProducts
 
   const allProductNutrientDoses = addNutrientDoses(productDoses.flatMap(getNutrientDosesFromProductDose))
@@ -174,6 +187,7 @@ function App() {
       <Modal isOpen={!!selectedProduct} onClickAway={() => setSelectedProduct(undefined)}>
          {selectedProduct ? <ProductInfo product={selectedProduct}/> : null}
       </Modal>
+      {fetchingDatabase ? <FetchingDatabase /> : null}
     </AppContainer>
   );
 }
