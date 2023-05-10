@@ -107,10 +107,10 @@ const Row = styled('div')`
 `
 
 function getNutrientDosesFromProductDose(pd: ProductDose): NutrientDose[] {
-  if (pd.servings > 0) {
+  if (pd.servings !== undefined && pd.servings > 0) {
     return pd.product.nutrientsPerServing?.map(n => ({ nutrient: n.nutrient, amount: { value: n.amount.value * pd.servings, unit: n.amount.unit } }))
   }
-  if (pd.grams > 0) {
+  if (pd.grams !== undefined && pd.grams > 0) {
     return pd.product.nutrientsPer100g?.map(n => ({ nutrient: n.nutrient, amount: { value: n.amount.value * pd.grams / 100, unit: n.amount.unit } }))
   }
   return []
