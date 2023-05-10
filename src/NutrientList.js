@@ -18,27 +18,30 @@ const Row = styled('div')`
 const RowTitle = styled('div')`
     display: flex;
     flex: 1;
-    min-height: 22px;
+    min-height: 16px;
+    font-size: 12px;
 `
 
 const RowValue = styled('div')`
     display: flex;
-    margin-right: 22px;
+    margin-right: 4px;
+    font-size: 12px;
 `
 
-function NutrientRow({ nutrient, nutrientDose = {} }) {
+function NutrientRow({ nutrient, showName, nutrientDose = {} }) {
     const isCovered = nutrientDose.amount && nutrientDose.amount.value < 0
+    const value = nutrientDose?.amount ? Math.round(nutrientDose?.amount?.value * 100)/100 : undefined
     return (
-        <Row><RowTitle>{isCovered ? '✅ ' : null}{nutrient}</RowTitle> <RowValue>{nutrientDose?.amount?.value} {nutrientDose?.amount?.unit}</RowValue></Row>
+        <Row><RowTitle>{isCovered ? '✅ ' : null}{showName ? nutrient : ''}</RowTitle> <RowValue>{value} {nutrientDose?.amount?.unit}</RowValue></Row>
     )
 }
 
-export default function NutrientList({ nutrientDoses = [] }) {
+export default function NutrientList({ nutrientDoses = [], showNames, onlyProvided }) {
+    const nutrients = onlyProvided ? nutrientDoses.map(d => d.nutrient) : allNutrients
     return (
         <Container>
-            {allNutrients.map(nutrient => {
-                console.log('nutrient row', nutrient, nutrientDoses.find(dose => dose.nutrient === nutrient ))
-                return <NutrientRow nutrient={nutrient} nutrientDose={nutrientDoses.find(dose => dose.nutrient === nutrient )} />
+            {nutrients.map(nutrient => {
+                return <NutrientRow nutrient={nutrient} showName={showNames} nutrientDose={nutrientDoses.find(dose => dose.nutrient === nutrient )} />
             }
             )}
         </Container>

@@ -1,4 +1,4 @@
-import { Macronutrient, Micronutrient, NutrientDose, NutrientUnit } from "./nutrient";
+import { Macronutrient, Micronutrient, NutrientDose, NutrientUnit, Product, ProductDose } from "./nutrient";
 
 export const athelticGreensDoses: NutrientDose[] = [
     { nutrient: Macronutrient.Carbohydrate, amount: { value: 6, unit: NutrientUnit.G }},
@@ -27,3 +27,14 @@ export const athelticGreensDoses: NutrientDose[] = [
     { nutrient: Micronutrient.Sodium, amount: { value: 45, unit: NutrientUnit.MG }},
     { nutrient: Micronutrient.Potassium, amount: { value: 300, unit: NutrientUnit.MG }},
 ]
+
+export const atheticGreens: Product = {
+    id: 'athleticGreens',
+    name: 'AG1',
+    nutrientsPerServing: athelticGreensDoses,
+}
+
+export const atheticGreensOneServing: ProductDose = {
+    product: atheticGreens,
+    servings: 1,
+}
