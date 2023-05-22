@@ -14,6 +14,7 @@ import ProductDosesList from "./ProductDosesList";
 import Modal from "./Modal";
 import ProductInfo from "./ProductInfo";
 import FetchingDatabase from "./FetchingDatabase";
+import { useStorage } from "./storage";
 
 setupGoober(React.createElement)
 
@@ -89,7 +90,7 @@ const AppContainer = styled('div')`
   display: flex;
   flex-directio: row;
   flex: 1;
-  margin: 16px;
+  margin: 14px;
 `
 
 const Column = styled('div')`
@@ -104,6 +105,11 @@ const Row = styled('div')`
   flex-direction: row;
   flex: 1;
   white-space: pre;
+`
+
+const SectionTitle = styled('div')`
+  font-weight: bold;
+  margin-bottom: 8px;
 `
 
 function getNutrientDosesFromProductDose(pd: ProductDose): NutrientDose[] {
@@ -133,6 +139,9 @@ function App() {
   const [selectedNutrient, setSelectedNutrient] = useState()
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>()
   const [productDoses, setProductDoses] = useState([atheticGreensOneServing])
+  const [sections, setSections] = useStorage('sections', {})
+  const [selectedSections, setSelectedSections] = useStorage('selectedSections', [])
+  const sectionNames = Object.keys(sections)
 
   const onNutrientSelectChange = (e: any) => {
     setSelectedNutrient(e.target.value)
@@ -147,17 +156,40 @@ function App() {
   const onProductClick = (product: Product) => setSelectedProduct(product)
   const onProductDoseClick = (productDose: ProductDose) => setSelectedProduct(productDose.product)
 
+  const onProductDosesSectionSave = (productDose: ProductDose, name: string) => {
+    if (!name) return
+    setSections({ ...sections, [name]: productDose })
+    setSelectedSections([ ...selectedSections, name ])
+  }
+
+  const onProductDoseCheckChange = (name: string, value: boolean) => {
+    if (value && !selectedSections.includes(name)) {
+      setSelectedSections([ ...selectedSections, name ])
+    } else if (!value && selectedSections.includes(name)) {
+      const newSections = selectedSections.filter((s: string) => s !== name)
+      setSelectedSections(newSections)
+    }
+  }
+
+  const onProductDoseListRemoveClick = (name: string) => () => {
+    if (window.confirm('Are you sure you want to remove this sections?')) {
+      const { [name]: _, ...newSections } = sections
+      setSections(newSections)
+    }
+  }
+
   const productsFound = searchPhrase ? productsDatabase.getFood(searchPhrase as any as string) : undefined
   const topNutrientProducts = selectedNutrient ? productsDatabase.getFoodsWithMost(selectedNutrient, 50) : undefined
   const displayProducts = productsFound ? productsFound : topNutrientProducts
 
-  const allProductNutrientDoses = addNutrientDoses(productDoses.flatMap(getNutrientDosesFromProductDose))
+  const allSectionsProductDoses = [ productDoses, ...(sectionNames.map(name => selectedSections.includes(name) ? sections[name] : null).filter(Boolean))].flatMap(f => f) as ProductDose[]
+  const allProductNutrientDoses = addNutrientDoses(allSectionsProductDoses.flatMap(getNutrientDosesFromProductDose))
   const missing = getNutrientsMissing(nutrientsMan32, allProductNutrientDoses)
   return (
     <AppContainer>
       <Row>
         <Column style={{marginRight: 22, flex: 0, flexBasis: 400, maxWidth: 400}}>
-          SEARCH:<br/><br/>
+          <SectionTitle>SEARCH:</SectionTitle>
           <TextField onChange={onSearchChange} style={{alignSelf: 'stretch', marginBottom: 12}}/>
           <select onChange={onNutrientSelectChange}>
             <option> - select nutrient - </option>
@@ -166,21 +198,37 @@ function App() {
           {displayProducts ? <ProductList products={displayProducts} highlightNutrient={selectedNutrient} onAddClick={onAddProductClick} onClick={onProductClick}/> : null}
         </Column>
         <Column>
-          SELECTED:<br/><br/>
-          <ProductDosesList productDoses={productDoses} onRemoveClick={onRemoveProductDoseClick} onClick={onProductDoseClick}/>
+          <SectionTitle>SELECTED:</SectionTitle>
+          <ProductDosesList 
+            productDoses={productDoses}
+            onRemoveProductDoseClick={onRemoveProductDoseClick}
+            onClick={onProductDoseClick}
+            onSave={onProductDosesSectionSave}
+            
+          />
+          {sectionNames ? sectionNames.map(s => 
+            <ProductDosesList
+              title={s}
+              checked={selectedSections.includes(s)}
+              productDoses={sections[s]}
+              onRemoveProductDoseClick={() => {}}
+              onCheckChange={onProductDoseCheckChange}
+              onClick={onProductDoseClick}
+              onRemoveClick={onProductDoseListRemoveClick(s)}
+            />) : null}
         </Column>
       </Row>
       <Row style={{flex: 0.7}}>
         <Column style={{flex: 1.7}}>
-          REQUIRED (Man 32):<br/><br/>
+          <SectionTitle>REQUIRED (Man 32):</SectionTitle>
           <NutrientList nutrientDoses={nutrientsMan32} showNames/>
         </Column>
         <Column>
-          SUPPLIED:<br/><br/>
+          <SectionTitle>SUPPLIED:</SectionTitle>
           <NutrientList nutrientDoses={allProductNutrientDoses}/>
         </Column>
         <Column>
-          MISSING:<br/><br/>
+          <SectionTitle>MISSING:</SectionTitle>
           <NutrientList nutrientDoses={missing}/>
         </Column>
       </Row>

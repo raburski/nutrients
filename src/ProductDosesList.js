@@ -1,22 +1,34 @@
 import { styled } from "goober";
+import { useState } from "react";
 
 const Container = styled('div')`
     display: flex;
-    flex: 1;
     flex-direction: column;
     margin-right: 22px;
+    border-radius: 12px;
+    background-color: #F5F5F5;
+    margin-bottom: 12px;
+    padding-bottom: 2px;
+    overflow: hidden;
+`
+
+const Title = styled('h2')`
+    margin-bottom: 2px;
+    margin-top: 2px;
+    margin-left: 4px;
 `
 
 const Row = styled('div')`
     display: flex;
     flex-direction: row;
     align-items: center;
-    border-bottom: 1px solid black;
-    padding: 4px;
+    border-top: 1px solid #BABABA;
+    padding: 6px;
+    padding-left: 10px;
     cursor: pointer;
 
     &:hover {
-        background-color: #f6f6f6;
+        background-color: #e5e5e5;
     }
 `
 
@@ -37,21 +49,51 @@ const Button = styled('button')`
     margin-left: 12px;
 `
 
+const Controls = styled('div')`
+    display: flex;
+    flex-direction: row;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-right: 6px;
+    padding-left: 6px;
+`
+
+const Spread = styled('div')`
+    display: flex;
+    flex: 1;
+`
+
 function ProductDoseRow({ productDose, onRemoveClick, onClick }) {
     const value = productDose.servings ? `${productDose.servings} servings` : `${productDose.grams} g`
     return (
-        <Row onClick={onClick}><RowTitle>{productDose.product.name}</RowTitle> <RowValue>{value}</RowValue><Button onClick={onRemoveClick}>✕</Button></Row>
+        <Row onClick={onClick}><RowTitle>{productDose.product.name}</RowTitle> <RowValue>{value}</RowValue>{onRemoveClick ? <Button onClick={onRemoveClick}>✕</Button> : null }</Row>
     )
 }
 
-export default function ProductDosesList({ productDoses = [], onRemoveClick, onClick }) {
+export default function ProductDosesList({ title = '', checked = false, productDoses = [], onRemoveProductDoseClick, onClick, onRemoveClick = () => {}, onCheckChange = (a, b) => {}, onSave = (prod, name) => {} }) {
+    const [saveName, setSaveName] = useState('')
+    const onSaveChange = (e) => setSaveName(e.target.value)
+    const onSaveClick = () => {
+        setSaveName('')
+        onSave(productDoses, saveName)
+    }
+    const onCheckboxClick = (e) => onCheckChange(title, e.target.checked)
     return (
         <Container>
-            {productDoses.map(productDose => <ProductDoseRow productDose={productDose} onClick={() => onClick(productDose)} onRemoveClick={(e) => {
-                e.cancelBubble = true
-                e.stopPropagation && e.stopPropagation()
-                onRemoveClick(productDose)
-            }}/>)}
+            <Controls>
+                {!title ? <><input type="text" value={saveName} onChange={onSaveChange} placeholder="Meal name"/><button onClick={onSaveClick}>save</button></> : null}
+                {title ? <><Title><input checked={checked} type="checkbox" onClick={onCheckboxClick}/> {title}</Title><Spread /><Button onClick={onRemoveClick}>✕</Button></> : null}
+            </Controls>
+            {productDoses.map(productDose => 
+                <ProductDoseRow
+                    productDose={productDose}
+                    onClick={() => onClick(productDose)}
+                    onRemoveClick={!title ? ((e) => {
+                        e.cancelBubble = true
+                        e.stopPropagation && e.stopPropagation()
+                        onRemoveProductDoseClick(productDose)
+                    }) : undefined}
+            />)}
         </Container>
     )
 }
