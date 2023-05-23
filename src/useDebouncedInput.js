@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-export default function useDebouncedInput(debounce = 300) {
+export default function useDebouncedInput(debounce = 500) {
     const [currentValue, setCurrentValue] = useState()
     const [delayedValue, setDelayedValue] = useState()
     const onChange = (event) => {

@@ -1,5 +1,6 @@
 import { styled } from "goober";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import useDebouncedInput from "./useDebouncedInput";
 
 const Container = styled('div')`
     display: flex;
@@ -26,6 +27,7 @@ const Row = styled('div')`
     padding: 6px;
     padding-left: 10px;
     cursor: pointer;
+    font-size: 12px;
 
     &:hover {
         background-color: #e5e5e5;
@@ -42,6 +44,20 @@ const RowValue = styled('div')`
     display: flex;
     font-size: 12px;
     margin-left: 12px;
+`
+
+const RowValueInput = styled('input')`
+    text-align: right;
+    margin-right: 4px;
+    width: 60px;
+    background-color: transparent;
+    border-width: 0px;
+    font-size: 12px;
+    border-radius: 4px;
+
+    &:hover {
+        background-color: #F5F5F5;
+    }
 `
 
 const Button = styled('button')`
@@ -63,14 +79,27 @@ const Spread = styled('div')`
     flex: 1;
 `
 
-function ProductDoseRow({ productDose, onRemoveClick, onClick }) {
-    const value = productDose.servings ? `${productDose.servings} servings` : `${productDose.grams} g`
+function cancelEvent(e) {
+    e.cancelBubble = true
+    e.stopPropagation && e.stopPropagation()
+}
+
+function ProductDoseRow({ productDose, onRemoveClick, onClick, onValueChange }) {
+    const initialValue = productDose.servings ? productDose.servings : productDose.grams
+    const [value, onInputValueChange] = useDebouncedInput()
+    // const value = productDose.servings ? productDose.servings : productDose.grams
+    const unit = productDose.servings ? `servings` : `g`
+    useEffect(() => {
+        if (value !== undefined) {
+            onValueChange(productDose, value)
+        }
+    }, [value])
     return (
-        <Row onClick={onClick}><RowTitle>{productDose.product.name}</RowTitle> <RowValue>{value}</RowValue>{onRemoveClick ? <Button onClick={onRemoveClick}>✕</Button> : null }</Row>
+        <Row onClick={onClick}><RowTitle>{productDose.product.name}</RowTitle> <RowValueInput type="text" defaultValue={initialValue} onFocus={cancelEvent} onClick={cancelEvent} onChange={onInputValueChange}/> {unit}{onRemoveClick ? <Button onClick={onRemoveClick}>✕</Button> : null }</Row>
     )
 }
 
-export default function ProductDosesList({ title = '', checked = false, productDoses = [], onRemoveProductDoseClick, onClick, onRemoveClick = () => {}, onCheckChange = (a, b) => {}, onSave = (prod, name) => {} }) {
+export default function ProductDosesList({ title = '', checked = false, productDoses = [], onRemoveProductDoseClick, onClick, onRemoveClick = () => {}, onCheckChange = (a, b) => {}, onSave = (prod, name) => {}, onProductDoseValueChange }) {
     const [saveName, setSaveName] = useState('')
     const onSaveChange = (e) => setSaveName(e.target.value)
     const onSaveClick = () => {
@@ -78,6 +107,7 @@ export default function ProductDosesList({ title = '', checked = false, productD
         onSave(productDoses, saveName)
     }
     const onCheckboxClick = (e) => onCheckChange(title, e.target.checked)
+
     return (
         <Container>
             <Controls>
@@ -88,9 +118,9 @@ export default function ProductDosesList({ title = '', checked = false, productD
                 <ProductDoseRow
                     productDose={productDose}
                     onClick={() => onClick(productDose)}
+                    onValueChange={onProductDoseValueChange}
                     onRemoveClick={!title ? ((e) => {
-                        e.cancelBubble = true
-                        e.stopPropagation && e.stopPropagation()
+                        cancelEvent(e)
                         onRemoveProductDoseClick(productDose)
                     }) : undefined}
             />)}

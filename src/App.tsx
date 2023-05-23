@@ -178,6 +178,12 @@ function App() {
     }
   }
 
+  const onProductDoseValueChange = (name: string) => (dose: ProductDose, newValue: any) => {
+    const newSections = deepCopy(sections)
+    newSections[name][sections[name].indexOf(dose)].grams = parseFloat(newValue)
+    setSections(newSections)
+  }
+
   const productsFound = searchPhrase ? productsDatabase.getFood(searchPhrase as any as string) : undefined
   const topNutrientProducts = selectedNutrient ? productsDatabase.getFoodsWithMost(selectedNutrient, 50) : undefined
   const displayProducts = productsFound ? productsFound : topNutrientProducts
@@ -204,10 +210,11 @@ function App() {
             onRemoveProductDoseClick={onRemoveProductDoseClick}
             onClick={onProductDoseClick}
             onSave={onProductDosesSectionSave}
-            
+            onProductDoseValueChange={() => {}}
           />
           {sectionNames ? sectionNames.map(s => 
             <ProductDosesList
+              key={s}
               title={s}
               checked={selectedSections.includes(s)}
               productDoses={sections[s]}
@@ -215,6 +222,7 @@ function App() {
               onCheckChange={onProductDoseCheckChange}
               onClick={onProductDoseClick}
               onRemoveClick={onProductDoseListRemoveClick(s)}
+              onProductDoseValueChange={onProductDoseValueChange(s)}
             />) : null}
         </Column>
       </Row>
