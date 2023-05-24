@@ -4,7 +4,7 @@ import './App.css';
 import { setup as setupGoober, styled } from 'goober'
 import { NutrientAmount, NutrientDose, NutrientUnit, allNutrients, Micronutrient, ProductDose, Product } from "./types/nutrient";
 import { nutrientsMan32 } from "./types/doses";
-import { athelticGreensDoses, atheticGreensOneServing } from "./types/products";
+import { athelticGreensDoses, atheticGreens, atheticGreensOneServing, bananaProduct, wheyProduct } from "./types/products";
 import NutrientList from "./NutrientList";
 import productsDatabase from "./fdc";
 import useDebouncedInput from "./useDebouncedInput";
@@ -90,7 +90,7 @@ const AppContainer = styled('div')`
   display: flex;
   flex-directio: row;
   flex: 1;
-  margin: 14px;
+  
 `
 
 const Column = styled('div')`
@@ -98,6 +98,9 @@ const Column = styled('div')`
   flex-direction: column;
   flex: 1;
   white-space: pre;
+  max-height: 100vh;
+  overflow: scroll;
+
 `
 
 const Row = styled('div')`
@@ -110,6 +113,7 @@ const Row = styled('div')`
 const SectionTitle = styled('div')`
   font-weight: bold;
   margin-bottom: 8px;
+  margin-top: 12px;
 `
 
 function getNutrientDosesFromProductDose(pd: ProductDose): NutrientDose[] {
@@ -133,32 +137,45 @@ function useFetchDatabase() {
   return [fetching]
 }
 
+const DEFAULT_SECTION_TITLE = '_default'
+const DEFAULT_SECTIONS = { [DEFAULT_SECTION_TITLE]: [atheticGreensOneServing] }
+
+const DEFAULT_SEARCH_LIST = [
+  atheticGreens,
+  bananaProduct,
+  wheyProduct,
+]
+
 function App() {
+  const [selectedSection, setSelectedSection] = useState(DEFAULT_SECTION_TITLE)
   const [fetchingDatabase] = useFetchDatabase()
   const [searchPhrase, onSearchChange, setSearchPhrase] = useDebouncedInput()
   const [selectedNutrient, setSelectedNutrient] = useState()
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>()
-  const [productDoses, setProductDoses] = useState([atheticGreensOneServing])
-  const [sections, setSections] = useStorage('sections', {})
-  const [selectedSections, setSelectedSections] = useStorage('selectedSections', [])
+  const [sections, setSections] = useStorage('sections', DEFAULT_SECTIONS)
+  const [selectedSections, setSelectedSections] = useStorage('selectedSections', [DEFAULT_SECTION_TITLE])
   const sectionNames = Object.keys(sections)
 
   const onNutrientSelectChange = (e: any) => {
     setSelectedNutrient(e.target.value)
   }
   const onAddProductClick = (product: Product) => {
-    setProductDoses([...productDoses, { product, grams: 100 }])
+    const doses = deepCopy(sections[selectedSection])
+    const newDose = { product, grams: product.nutrientsPer100g ? 100 : undefined, servings: product.nutrientsPerServing ? 1 : undefined }
+    setSections({ ...sections, [selectedSection]: [ ...doses, newDose ]})
   }
-  const onRemoveProductDoseClick = (productDose: ProductDose) => {
+  const onRemoveProductDoseClick = (sectionName: string, productDose: ProductDose) => {
+    const productDoses = sections[sectionName]
     const doseIndex = productDoses.indexOf(productDose)
-    setProductDoses([...productDoses.slice(0, doseIndex), ...productDoses.slice(doseIndex + 1)])
+    const newDoses = [...productDoses.slice(0, doseIndex), ...productDoses.slice(doseIndex + 1)]
+    setSections({ ...sections, [sectionName]: newDoses })
   }
   const onProductClick = (product: Product) => setSelectedProduct(product)
   const onProductDoseClick = (productDose: ProductDose) => setSelectedProduct(productDose.product)
 
   const onProductDosesSectionSave = (productDose: ProductDose, name: string) => {
     if (!name) return
-    setSections({ ...sections, [name]: productDose })
+    setSections({ ...sections, [name]: productDose, [DEFAULT_SECTION_TITLE]: [] })
     setSelectedSections([ ...selectedSections, name ])
   }
 
@@ -185,42 +202,39 @@ function App() {
   }
 
   const productsFound = searchPhrase ? productsDatabase.getFood(searchPhrase as any as string) : undefined
-  const topNutrientProducts = selectedNutrient ? productsDatabase.getFoodsWithMost(selectedNutrient, 50) : undefined
+  const topNutrientProducts = selectedNutrient ? productsDatabase.getFoodsWithMost(selectedNutrient, 200) : DEFAULT_SEARCH_LIST
   const displayProducts = productsFound ? productsFound : topNutrientProducts
 
-  const allSectionsProductDoses = [ productDoses, ...(sectionNames.map(name => selectedSections.includes(name) ? sections[name] : null).filter(Boolean))].flatMap(f => f) as ProductDose[]
+  const allSectionsProductDoses = sectionNames.map(name => selectedSections.includes(name) ? sections[name] : null).filter(Boolean).flatMap(f => f) as ProductDose[]
   const allProductNutrientDoses = addNutrientDoses(allSectionsProductDoses.flatMap(getNutrientDosesFromProductDose))
   const missing = getNutrientsMissing(nutrientsMan32, allProductNutrientDoses)
   return (
     <AppContainer>
       <Row>
-        <Column style={{marginRight: 22, flex: 0, flexBasis: 400, maxWidth: 400}}>
+        <Column style={{marginRight: 22, marginLeft: 12, flex: 0, flexBasis: 400, maxWidth: 400}}>
           <SectionTitle>SEARCH:</SectionTitle>
           <TextField onChange={onSearchChange} style={{alignSelf: 'stretch', marginBottom: 12}}/>
           <select onChange={onNutrientSelectChange}>
-            <option> - select nutrient - </option>
+            <option value=""> - select nutrient - </option>
             {allNutrients.map(n => <option value={n}>{n}</option>)}
           </select>
           {displayProducts ? <ProductList products={displayProducts} highlightNutrient={selectedNutrient} onAddClick={onAddProductClick} onClick={onProductClick}/> : null}
         </Column>
         <Column>
           <SectionTitle>SELECTED:</SectionTitle>
-          <ProductDosesList 
-            productDoses={productDoses}
-            onRemoveProductDoseClick={onRemoveProductDoseClick}
-            onClick={onProductDoseClick}
-            onSave={onProductDosesSectionSave}
-            onProductDoseValueChange={() => {}}
-          />
           {sectionNames ? sectionNames.map(s => 
             <ProductDosesList
               key={s}
-              title={s}
+              name={s}
+              isSelected={s === selectedSection}
+              isDefault={s === DEFAULT_SECTION_TITLE}
               checked={selectedSections.includes(s)}
               productDoses={sections[s]}
-              onRemoveProductDoseClick={() => {}}
+              onClick={() => setSelectedSection(s)}
+              onRemoveProductDoseClick={onRemoveProductDoseClick}
+              onSave={onProductDosesSectionSave}
               onCheckChange={onProductDoseCheckChange}
-              onClick={onProductDoseClick}
+              onProductDoseClick={onProductDoseClick}
               onRemoveClick={onProductDoseListRemoveClick(s)}
               onProductDoseValueChange={onProductDoseValueChange(s)}
             />) : null}

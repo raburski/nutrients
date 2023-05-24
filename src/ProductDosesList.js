@@ -7,10 +7,10 @@ const Container = styled('div')`
     flex-direction: column;
     margin-right: 22px;
     border-radius: 12px;
-    background-color: #F5F5F5;
+    background-color: ${props => props.isSelected ? '#ebebeb' : '#F5F5F5'};
     margin-bottom: 12px;
     padding-bottom: 2px;
-    overflow: hidden;
+    cursor: pointer;
 `
 
 const Title = styled('h2')`
@@ -99,30 +99,32 @@ function ProductDoseRow({ productDose, onRemoveClick, onClick, onValueChange }) 
     )
 }
 
-export default function ProductDosesList({ title = '', checked = false, productDoses = [], onRemoveProductDoseClick, onClick, onRemoveClick = () => {}, onCheckChange = (a, b) => {}, onSave = (prod, name) => {}, onProductDoseValueChange }) {
+export default function ProductDosesList({ isDefault, isSelected, name, checked = false, productDoses = [], onRemoveProductDoseClick, onClick, onProductDoseClick, onRemoveClick = () => {}, onCheckChange = (a, b) => {}, onSave = (prod, name) => {}, onProductDoseValueChange }) {
     const [saveName, setSaveName] = useState('')
     const onSaveChange = (e) => setSaveName(e.target.value)
-    const onSaveClick = () => {
+    const onSaveClick = (e) => {
+        cancelEvent(e); 
         setSaveName('')
         onSave(productDoses, saveName)
     }
-    const onCheckboxClick = (e) => onCheckChange(title, e.target.checked)
+    const onCheckboxClick = (e) => onCheckChange(name, e.target.checked)
+    const onContainerClick = (e) => { cancelEvent(e); onClick() }
 
     return (
-        <Container>
+        <Container isSelected={isSelected} onClick={onContainerClick}>
             <Controls>
-                {!title ? <><input type="text" value={saveName} onChange={onSaveChange} placeholder="Meal name"/><button onClick={onSaveClick}>save</button></> : null}
-                {title ? <><Title><input checked={checked} type="checkbox" onClick={onCheckboxClick}/> {title}</Title><Spread /><Button onClick={onRemoveClick}>✕</Button></> : null}
+                {isDefault ? <><input type="text" value={saveName} onChange={onSaveChange} placeholder="Meal name"/><button onClick={onSaveClick}>save</button></> : null}
+                {!isDefault ? <><Title><input checked={checked} type="checkbox" onClick={onCheckboxClick}/> {name}</Title><Spread /><Button onClick={onRemoveClick}>✕</Button></> : null}
             </Controls>
             {productDoses.map(productDose => 
                 <ProductDoseRow
                     productDose={productDose}
-                    onClick={() => onClick(productDose)}
+                    onClick={(e) => { cancelEvent(e); onProductDoseClick(productDose)} }
                     onValueChange={onProductDoseValueChange}
-                    onRemoveClick={!title ? ((e) => {
+                    onRemoveClick={(e) => {
                         cancelEvent(e)
-                        onRemoveProductDoseClick(productDose)
-                    }) : undefined}
+                        onRemoveProductDoseClick(name, productDose)
+                    }}
             />)}
         </Container>
     )

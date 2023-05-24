@@ -25,6 +25,7 @@ const foodNutrientToMicronutrient: { [key: string]: Micronutrient } = {
     'Sodium': Micronutrient.Sodium,
     'Selenium': Micronutrient.Selenium,
     'Zinc': Micronutrient.Zinc,
+    'Chromium': Micronutrient.Chromium,
 
     // Nitrogen
     // Betaine
@@ -73,6 +74,7 @@ function nutrientNameToEnum(name: string): Nutrient | undefined {
 const unitNameToNutritionUnit: { [key: string]: NutrientUnit } = {
     'mg': NutrientUnit.MG,
     'µg': NutrientUnit.MCG,
+    'mcg': NutrientUnit.MCG,
     'g': NutrientUnit.G,
 }
 
