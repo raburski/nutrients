@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import useDebouncedInput from "./useDebouncedInput";
 import { downloadString } from "./functions";
 import EmojiButton from "./EmojiButton";
+import { addNutrientDoses, getNutrientDosesFromProductDose } from "./nutrients";
 
 const Container = styled('div')`
     display: flex;
@@ -19,6 +20,14 @@ const Title = styled('h2')`
     margin-bottom: 2px;
     margin-top: 2px;
     margin-left: 4px;
+    font-size: 20px;
+`
+
+const Subtitle = styled('div')`
+    margin-bottom: 6px;
+    margin-top: 8px;
+    margin-left: 8px;
+    font-size: 12px;
 `
 
 const Row = styled('div')`
@@ -70,6 +79,7 @@ const Button = styled('button')`
 const Controls = styled('div')`
     display: flex;
     flex-direction: row;
+    align-items: stretch;
     padding-top: 8px;
     padding-bottom: 8px;
     padding-right: 6px;
@@ -119,11 +129,17 @@ export default function ProductDosesList({ isDefault, isSelected, name, checked 
         downloadString(string, 'json', `${name}.json`)
     }
 
+    const allProductNutrientDoses = addNutrientDoses(productDoses.flatMap(getNutrientDosesFromProductDose))
+    const carbs = allProductNutrientDoses.find(d => d.nutrient === 'Carbohydrate')
+    const fat = allProductNutrientDoses.find(d => d.nutrient === 'Fat')
+    const protein = allProductNutrientDoses.find(d => d.nutrient === 'Protein')
+    const macroString = carbs ? `Carb: ${carbs.amount.value}, Protein: ${protein.amount.value}, Fat: ${fat.amount.value}` : null
+
     return (
         <Container isSelected={isSelected} onClick={onContainerClick}>
             <Controls>
                 {isDefault ? <><input type="text" value={saveName} onChange={onSaveChange} placeholder="Meal name"/><button onClick={onSaveClick}>save</button><Spread /><EmojiButton onClick={onUploadClick}>⬆️</EmojiButton></> : null}
-                {!isDefault ? <><Title><input checked={checked} type="checkbox" onClick={onCheckboxClick}/> {name}</Title><EmojiButton onClick={onDownloadClick}>⬇️</EmojiButton><Spread /><Button onClick={onRemoveClick}>✕</Button></> : null}
+                {!isDefault ? <><Title><input checked={checked} type="checkbox" onClick={onCheckboxClick}/> {name}</Title><Subtitle>{macroString}</Subtitle><Spread /><EmojiButton onClick={onDownloadClick}>⬇️</EmojiButton><Button onClick={onRemoveClick}>✕</Button></> : null}
             </Controls>
             {productDoses.map(productDose => 
                 <ProductDoseRow
