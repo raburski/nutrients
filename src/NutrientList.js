@@ -36,10 +36,30 @@ function NutrientRow({ nutrient, showName, nutrientDose = {} }) {
     )
 }
 
+const CALORIE_NUTRIENT = 'Calories'
+
+function calcCalorieDoes(doses) {
+    console.log('nutrientDoses', doses)
+    const carbs = doses.find(dose => dose.nutrient === 'Carbohydrate')
+    const protein = doses.find(dose => dose.nutrient === 'Protein')
+    const fat = doses.find(dose => dose.nutrient === 'Fat')
+    console.log('??/', carbs, protein, fat)
+    if (!carbs || !protein || !fat) return null
+    return {
+        nutrient: 'Calories',
+        amount: {
+            value: carbs.amount.value * 4 + protein.amount.value * 4 + fat.amount.value * 9,
+            unit: 'calories',
+        }
+    }
+}
+
 export default function NutrientList({ nutrientDoses = [], showNames = false, onlyProvided = false }) {
     const nutrients = onlyProvided ? nutrientDoses.map(d => d.nutrient) : allNutrients
+    const calorieDose = calcCalorieDoes(nutrientDoses)
     return (
         <Container>
+            {calorieDose ? <NutrientRow nutrient={CALORIE_NUTRIENT} showName={showNames} nutrientDose={calorieDose}/> : null}
             {nutrients.map(nutrient => {
                 return <NutrientRow nutrient={nutrient} showName={showNames} nutrientDose={nutrientDoses.find(dose => dose.nutrient === nutrient )} />
             }
