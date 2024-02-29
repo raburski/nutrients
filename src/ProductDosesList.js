@@ -133,7 +133,7 @@ export default function ProductDosesList({ isDefault, isSelected, name, checked 
     const carbs = allProductNutrientDoses.find(d => d.nutrient === 'Carbohydrate')
     const fat = allProductNutrientDoses.find(d => d.nutrient === 'Fat')
     const protein = allProductNutrientDoses.find(d => d.nutrient === 'Protein')
-    const macroString = carbs ? `Carb: ${carbs.amount.value}, Protein: ${protein.amount.value}, Fat: ${fat.amount.value}` : null
+    const macroString = carbs ? `Carb: ${Math.round(carbs.amount.value)}, Protein: ${Math.round(protein.amount.value)}, Fat: ${Math.round(fat.amount.value)}` : null
 
     return (
         <Container isSelected={isSelected} onClick={onContainerClick}>
