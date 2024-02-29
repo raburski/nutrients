@@ -39,11 +39,9 @@ function NutrientRow({ nutrient, showName, nutrientDose = {}, separated = false 
 const CALORIE_NUTRIENT = 'Calories'
 
 function calcCalorieDoes(doses) {
-    console.log('nutrientDoses', doses)
     const carbs = doses.find(dose => dose.nutrient === 'Carbohydrate')
     const protein = doses.find(dose => dose.nutrient === 'Protein')
     const fat = doses.find(dose => dose.nutrient === 'Fat')
-    console.log('??/', carbs, protein, fat)
     if (!carbs || !protein || !fat) return null
     return {
         nutrient: 'Calories',
