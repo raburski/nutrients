@@ -27,6 +27,8 @@ const foodNutrientToMicronutrient: { [key: string]: Micronutrient } = {
     'Zinc': Micronutrient.Zinc,
     'Chromium': Micronutrient.Chromium,
 
+    'Fiber': Micronutrient.Fiber,
+
     // Nitrogen
     // Betaine
     // Choline
@@ -115,7 +117,7 @@ function parseFood(food: any): Product {
     return {
         id: `fdc:${food.fdcId}`,
         name: food.description,
-        nutrientsPer100g: food.foodNutrients.map(parseNutrientDose).filter(isUniqueNutrientDose)
+        nutrientsPer100g: food.foodNutrients.map(parseNutrientDose).filter(isUniqueNutrientDose),
     }
 }
 

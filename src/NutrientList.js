@@ -11,7 +11,7 @@ const Container = styled('div')`
 const Row = styled('div')`
     display: flex;
     flex-direction: row;
-    border-bottom: 1px solid black;
+    border-bottom: ${props => props.separated ? '2px' : '1px'} solid black;
     padding: 4px;
 `
 
@@ -28,11 +28,11 @@ const RowValue = styled('div')`
     font-size: 12px;
 `
 
-function NutrientRow({ nutrient, showName, nutrientDose = {} }) {
+function NutrientRow({ nutrient, showName, nutrientDose = {}, separated = false }) {
     const isCovered = nutrientDose.amount && nutrientDose.amount.value < 0
     const value = nutrientDose?.amount ? Math.round(nutrientDose?.amount?.value * 100)/100 : undefined
     return (
-        <Row><RowTitle>{isCovered ? '✅ ' : null}{showName ? nutrient : ''}</RowTitle> <RowValue>{value} {nutrientDose?.amount?.unit}</RowValue></Row>
+        <Row separated={separated}><RowTitle>{isCovered ? '✅ ' : null}{showName ? nutrient : ''}</RowTitle> <RowValue>{value} {nutrientDose?.amount?.unit}</RowValue></Row>
     )
 }
 
@@ -57,11 +57,14 @@ function calcCalorieDoes(doses) {
 export default function NutrientList({ nutrientDoses = [], showNames = false, onlyProvided = false }) {
     const nutrients = onlyProvided ? nutrientDoses.map(d => d.nutrient) : allNutrients
     const calorieDose = calcCalorieDoes(nutrientDoses)
+    function shouldSeparate(nutrient) {
+        return nutrient === 'Fat' || nutrient === 'Zinc'
+    }
     return (
         <Container>
-            {calorieDose ? <NutrientRow nutrient={CALORIE_NUTRIENT} showName={showNames} nutrientDose={calorieDose}/> : null}
+            {calorieDose ? <NutrientRow separated nutrient={CALORIE_NUTRIENT} showName={showNames} nutrientDose={calorieDose}/> : null}
             {nutrients.map(nutrient => {
-                return <NutrientRow nutrient={nutrient} showName={showNames} nutrientDose={nutrientDoses.find(dose => dose.nutrient === nutrient )} />
+                return <NutrientRow separated={shouldSeparate(nutrient)} nutrient={nutrient} showName={showNames} nutrientDose={nutrientDoses.find(dose => dose.nutrient === nutrient )} />
             }
             )}
         </Container>

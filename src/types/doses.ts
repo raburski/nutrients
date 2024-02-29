@@ -123,7 +123,11 @@ export const micronutrientsMan32: NutrientDose[] = [
     {
       nutrient: Micronutrient.Fluoride,
       amount: { value: 4, unit: NutrientUnit.MG },
-  }
+    },
+    {
+      nutrient: Micronutrient.Fiber,
+      amount: { value: 38, unit: NutrientUnit.G },
+    }
 ]
 
 export const nutrientsMan32 = [...macronutrientsMan32, ...micronutrientsMan32]

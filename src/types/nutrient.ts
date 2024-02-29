@@ -26,6 +26,8 @@ export enum Micronutrient {
     Selenium = 'Selenium',
     Sodium = 'Sodium',
     Zinc = 'Zinc',
+
+    Fiber = 'Fiber',
 }
 
 export enum Macronutrient {
