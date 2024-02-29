@@ -19,7 +19,7 @@ const ModalWindow = styled(motion.div)`
     display: flex;
     flex-direction: column;
     min-height: 200px;
-    min-width: 200px;
+    min-width: 364px;
     max-width: 90%;
     max-height: 90%;
     background-color: white;
