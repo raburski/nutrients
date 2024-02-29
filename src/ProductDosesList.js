@@ -1,6 +1,8 @@
 import { styled } from "goober";
 import { useEffect, useState } from "react";
 import useDebouncedInput from "./useDebouncedInput";
+import { downloadString } from "./functions";
+import EmojiButton from "./EmojiButton";
 
 const Container = styled('div')`
     display: flex;
@@ -99,7 +101,7 @@ function ProductDoseRow({ productDose, onRemoveClick, onClick, onValueChange }) 
     )
 }
 
-export default function ProductDosesList({ isDefault, isSelected, name, checked = false, productDoses = [], onRemoveProductDoseClick, onClick, onProductDoseClick, onRemoveClick = () => {}, onCheckChange = (a, b) => {}, onSave = (prod, name) => {}, onProductDoseValueChange }) {
+export default function ProductDosesList({ isDefault, isSelected, name, checked = false, productDoses = [], onRemoveProductDoseClick, onClick, onProductDoseClick, onRemoveClick = () => {}, onCheckChange = (a, b) => {}, onSave = (prod, name) => {}, onProductDoseValueChange, onUploadClick }) {
     const [saveName, setSaveName] = useState('')
     const onSaveChange = (e) => setSaveName(e.target.value)
     const onSaveClick = (e) => {
@@ -109,12 +111,19 @@ export default function ProductDosesList({ isDefault, isSelected, name, checked 
     }
     const onCheckboxClick = (e) => onCheckChange(name, e.target.checked)
     const onContainerClick = (e) => { cancelEvent(e); onClick() }
+    const onDownloadClick = () => {
+        const string = JSON.stringify({
+            name,
+            doses: productDoses,
+        })
+        downloadString(string, 'json', `${name}.json`)
+    }
 
     return (
         <Container isSelected={isSelected} onClick={onContainerClick}>
             <Controls>
-                {isDefault ? <><input type="text" value={saveName} onChange={onSaveChange} placeholder="Meal name"/><button onClick={onSaveClick}>save</button></> : null}
-                {!isDefault ? <><Title><input checked={checked} type="checkbox" onClick={onCheckboxClick}/> {name}</Title><Spread /><Button onClick={onRemoveClick}>✕</Button></> : null}
+                {isDefault ? <><input type="text" value={saveName} onChange={onSaveChange} placeholder="Meal name"/><button onClick={onSaveClick}>save</button><Spread /><EmojiButton onClick={onUploadClick}>⬆️</EmojiButton></> : null}
+                {!isDefault ? <><Title><input checked={checked} type="checkbox" onClick={onCheckboxClick}/> {name}</Title><EmojiButton onClick={onDownloadClick}>⬇️</EmojiButton><Spread /><Button onClick={onRemoveClick}>✕</Button></> : null}
             </Controls>
             {productDoses.map(productDose => 
                 <ProductDoseRow

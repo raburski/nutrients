@@ -15,6 +15,7 @@ import Modal from "./Modal";
 import ProductInfo from "./ProductInfo";
 import FetchingDatabase from "./FetchingDatabase";
 import { useStorage } from "./storage";
+import { uploadFile } from "./functions";
 
 setupGoober(React.createElement)
 
@@ -201,6 +202,13 @@ function App() {
     setSections(newSections)
   }
 
+  async function onUploadClick() {
+    const file = await uploadFile('json')
+    const meal = await JSON.parse(file)
+    const newSections = { ...sections, [meal.name]: meal.doses }
+    setSections(newSections)
+  }
+
   const productsFound = searchPhrase ? productsDatabase.getFood(searchPhrase as any as string) : undefined
   const topNutrientProducts = selectedNutrient ? productsDatabase.getFoodsWithMost(selectedNutrient, 200) : DEFAULT_SEARCH_LIST
   const displayProducts = productsFound ? productsFound : topNutrientProducts
@@ -237,6 +245,7 @@ function App() {
               onProductDoseClick={onProductDoseClick}
               onRemoveClick={onProductDoseListRemoveClick(s)}
               onProductDoseValueChange={onProductDoseValueChange(s)}
+              onUploadClick={onUploadClick}
             />) : null}
         </Column>
       </Row>
