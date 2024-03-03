@@ -2,7 +2,6 @@ import { styled } from "goober"
 
 const EmojiButton = styled('button')`
     font-size: 14px;
-    margin-left: 12px;
     padding-left: 8px;
     padding-right: 8px;
     border-radius: 16px;
