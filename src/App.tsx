@@ -80,6 +80,7 @@ function App() {
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>()
   const [sections, setSections] = useStorage('sections', DEFAULT_SECTIONS)
   const [selectedSections, setSelectedSections] = useStorage('selectedSections', [DEFAULT_SECTION_TITLE])
+  const [collapsedSections, setCollapsedSections] = useStorage('collapsedSections', [])
   const sectionNames = Object.keys(sections)
 
   const onNutrientSelectChange = (e: any) => {
@@ -134,6 +135,16 @@ function App() {
     setSections(newSections)
   }
 
+  const onSectionCollapseClick = (section: string) => async function _onSectionCollapseClick() {
+    let newCollapsedSections
+    if (collapsedSections.includes(section)) {
+      newCollapsedSections = collapsedSections.filter((e:any) => e !== section)
+    } else {
+      newCollapsedSections = [...collapsedSections, section]
+    }
+    await setCollapsedSections(newCollapsedSections)
+  }
+
   const productsFound = searchPhrase ? productsDatabase.getFood(searchPhrase as any as string) : undefined
   const topNutrientProducts = selectedNutrient ? productsDatabase.getFoodsWithMost(selectedNutrient, 200) : DEFAULT_SEARCH_LIST
   const displayProducts = productsFound ? productsFound : topNutrientProducts
@@ -160,11 +171,13 @@ function App() {
               key={s}
               name={s}
               isSelected={s === selectedSection}
+              isCollapsed={collapsedSections.includes(s)}
               isDefault={s === DEFAULT_SECTION_TITLE}
               checked={selectedSections.includes(s)}
               productDoses={sections[s]}
               onClick={() => setSelectedSection(s)}
               onRemoveProductDoseClick={onRemoveProductDoseClick}
+              onCollapse={onSectionCollapseClick(s)}
               onSave={onProductDosesSectionSave}
               onCheckChange={onProductDoseCheckChange}
               onProductDoseClick={onProductDoseClick}

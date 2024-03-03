@@ -111,7 +111,7 @@ function ProductDoseRow({ productDose, onRemoveClick, onClick, onValueChange }) 
     )
 }
 
-export default function ProductDosesList({ isDefault, isSelected, name, checked = false, productDoses = [], onRemoveProductDoseClick, onClick, onProductDoseClick, onRemoveClick = () => {}, onCheckChange = (a, b) => {}, onSave = (prod, name) => {}, onProductDoseValueChange, onUploadClick }) {
+export default function ProductDosesList({ isDefault, isSelected, isCollapsed, name, checked = false, productDoses = [], onRemoveProductDoseClick, onClick, onProductDoseClick, onCollapse, onRemoveClick = () => {}, onCheckChange = (a, b) => {}, onSave = (prod, name) => {}, onProductDoseValueChange, onUploadClick }) {
     const [saveName, setSaveName] = useState('')
     const onSaveChange = (e) => setSaveName(e.target.value)
     const onSaveClick = (e) => {
@@ -129,19 +129,32 @@ export default function ProductDosesList({ isDefault, isSelected, name, checked 
         downloadString(string, 'json', `${name}.json`)
     }
 
+    const onCollapseClick = (e) => {
+        cancelEvent(e)
+        onCollapse()
+    }
+
     const allProductNutrientDoses = addNutrientDoses(productDoses.flatMap(getNutrientDosesFromProductDose))
     const carbs = allProductNutrientDoses.find(d => d.nutrient === 'Carbohydrate')
     const fat = allProductNutrientDoses.find(d => d.nutrient === 'Fat')
     const protein = allProductNutrientDoses.find(d => d.nutrient === 'Protein')
-    const macroString = carbs ? `Carb: ${Math.round(carbs.amount.value)}, Protein: ${Math.round(protein.amount.value)}, Fat: ${Math.round(fat.amount.value)}` : null
+    const macroString = carbs ? `C: ${Math.round(carbs.amount.value)}, P: ${Math.round(protein.amount.value)}, F: ${Math.round(fat.amount.value)}` : null
 
     return (
         <Container isSelected={isSelected} onClick={onContainerClick}>
             <Controls>
                 {isDefault ? <><input type="text" value={saveName} onChange={onSaveChange} placeholder="Meal name"/><button onClick={onSaveClick}>save</button><Spread /><EmojiButton onClick={onUploadClick}>⬆️</EmojiButton></> : null}
-                {!isDefault ? <><Title><input checked={checked} type="checkbox" onClick={onCheckboxClick}/> {name}</Title><Subtitle>{macroString}</Subtitle><Spread /><EmojiButton onClick={onDownloadClick}>⬇️</EmojiButton><Button onClick={onRemoveClick}>✕</Button></> : null}
+                {!isDefault ? 
+                    <>
+                        <Title><input checked={checked} type="checkbox" onClick={onCheckboxClick}/> {name}</Title>
+                        <Subtitle>{macroString}</Subtitle>
+                        <Spread />
+                        <EmojiButton onClick={onCollapseClick}>{isCollapsed ? '🔽' : '🔼'}</EmojiButton>
+                        <EmojiButton onClick={onDownloadClick}>⬇️</EmojiButton>
+                        <Button onClick={onRemoveClick}>✕</Button>
+                    </> : null}
             </Controls>
-            {productDoses.map(productDose => 
+            {!isCollapsed && productDoses.map(productDose => 
                 <ProductDoseRow
                     productDose={productDose}
                     onClick={(e) => { cancelEvent(e); onProductDoseClick(productDose)} }
