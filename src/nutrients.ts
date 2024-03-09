@@ -1,11 +1,15 @@
 import { NutrientAmount, NutrientDose, NutrientUnit, ProductDose } from "./types/nutrient"
 
 const UNIT_CONVERSION_MATRIX: any = {
+  [NutrientUnit.G]: {
+    [NutrientUnit.MG]: 1000
+  },
   [NutrientUnit.MCG]: {
     [NutrientUnit.MG]: 0.001
   },
   [NutrientUnit.MG]: {
-    [NutrientUnit.MCG]: 1000
+    [NutrientUnit.MCG]: 1000,
+    [NutrientUnit.G]: 0.001
   },
 }
 
@@ -17,14 +21,14 @@ export function amountOperation(a1: NutrientAmount, a2: NutrientAmount, operatio
     if (a1.unit === a2.unit) {
       return { unit: a1.unit, value: operation(a1.value, a2.value) }
     }
-  
     const conversionMultiple = UNIT_CONVERSION_MATRIX[a2.unit][a1.unit]
+    // console.log('covert', a2.unit, 'to', a1.unit, 'by multiplying ', a2.unit, 'by', conversionMultiple)
     if (conversionMultiple !== undefined) {
       const convertedA2 = { unit: a1.unit, value: a2.value * conversionMultiple }
       return amountOperation(a1, convertedA2, operation)
     }
   
-    throw Error(`different units not supported for now: ${a1.unit} and ${a2.unit}`)
+    throw Error(`unit conversion not supported for now: ${a2.unit} -> ${a1.unit}`)
   }
   
 export function addAmounts(a1: NutrientAmount, a2: NutrientAmount): NutrientAmount {

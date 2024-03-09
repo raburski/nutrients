@@ -1,29 +1,28 @@
 import { Macronutrient, Micronutrient, NutrientDose, NutrientUnit } from "./nutrient"
 
-// based on https://alexvarga.substack.com/p/ive-calculated-nutrients-in-bryan
 export const macronutrientsMan32: NutrientDose[] = [
   {
     nutrient: Macronutrient.Carbohydrate,
-    amount: { value: 130, unit: NutrientUnit.G },
+    amount: { value: 280, unit: NutrientUnit.G },
   },
   {
     nutrient: Macronutrient.Protein,
-    amount: { value: 160, unit: NutrientUnit.G },
+    amount: { value: 180, unit: NutrientUnit.G },
   },
   {
     nutrient: Macronutrient.Fat,
-    amount: { value: 150, unit: NutrientUnit.G },
+    amount: { value: 60, unit: NutrientUnit.G },
   },
 ]
 
 export const micronutrientsMan32: NutrientDose[] = [
     {
-      nutrient: Micronutrient.VitaminA, // Bryan 1800
+      nutrient: Micronutrient.VitaminA,
       amount: { value: 900, unit: NutrientUnit.MCG_RAE },
     },
     {
-      nutrient: Micronutrient.VitaminC, // 950
-      amount: { value: 800, unit: NutrientUnit.MG },
+      nutrient: Micronutrient.VitaminC,
+      amount: { value: 90, unit: NutrientUnit.MG },
     },
     {
       nutrient: Micronutrient.VitaminD,
@@ -34,23 +33,23 @@ export const micronutrientsMan32: NutrientDose[] = [
       amount: { value: 15, unit: NutrientUnit.MG },
     },
     {
-      nutrient: Micronutrient.VitaminK, // 580
+      nutrient: Micronutrient.VitaminK,
       amount: { value: 120, unit: NutrientUnit.MCG },
     },
     {
-      nutrient: Micronutrient.VitaminB1, // Bryan 2.8
+      nutrient: Micronutrient.VitaminB1,
       amount: { value: 1.2, unit: NutrientUnit.MG },
     },
     {
-      nutrient: Micronutrient.VitaminB2, // Brayn 2.0
+      nutrient: Micronutrient.VitaminB2,
       amount: { value: 1.3, unit: NutrientUnit.MG },
     },
     {
-      nutrient: Micronutrient.VitaminB3, // 2.8
+      nutrient: Micronutrient.VitaminB3,
       amount: { value: 16, unit: NutrientUnit.MG_NE },
     },
     {
-      nutrient: Micronutrient.VitaminB6, // 3.5
+      nutrient: Micronutrient.VitaminB6,
       amount: { value: 1.7, unit: NutrientUnit.MG },
     },
     {
@@ -62,7 +61,7 @@ export const micronutrientsMan32: NutrientDose[] = [
       amount: { value: 2.4, unit: NutrientUnit.MCG },
     },
     {
-      nutrient: Micronutrient.VitaminB7, // 42
+      nutrient: Micronutrient.VitaminB7,
       amount: { value: 30, unit: NutrientUnit.MCG },
     },
     {
@@ -70,23 +69,23 @@ export const micronutrientsMan32: NutrientDose[] = [
       amount: { value: 5, unit: NutrientUnit.MG },
     },
     {
-      nutrient: Micronutrient.Calcium, // 2500
+      nutrient: Micronutrient.Calcium,
       amount: { value: 1000, unit: NutrientUnit.MG },
     },
     {
       nutrient: Micronutrient.Iron,
-      amount: { value: 10, unit: NutrientUnit.MG },
+      amount: { value: 8, unit: NutrientUnit.MG },
     },
     {
       nutrient: Micronutrient.Magnesium,
-      amount: { value: 410, unit: NutrientUnit.MG },
+      amount: { value: 400, unit: NutrientUnit.MG },
     },
     {
-      nutrient: Micronutrient.Phosphorus, // Bryan has lower
+      nutrient: Micronutrient.Phosphorus,
       amount: { value: 700, unit: NutrientUnit.MG },
     },
     {
-      nutrient: Micronutrient.Potassium, // Bryan has lower
+      nutrient: Micronutrient.Potassium,
       amount: { value: 4700, unit: NutrientUnit.MG },
     },
     {

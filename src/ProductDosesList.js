@@ -10,10 +10,13 @@ const Container = styled('div')`
     flex-direction: column;
     margin-right: 22px;
     border-radius: 12px;
+    border: 1px solid;
     background-color: ${props => props.isSelected ? '#ebebeb' : '#F5F5F5'};
+    border-color: ${props => props.isSelected ? '#d6d6d6' : 'white'};
     margin-bottom: 12px;
-    padding-bottom: 2px;
+
     cursor: pointer;
+    overflow: hidden;
 `
 
 const Title = styled('h2')`
@@ -21,6 +24,7 @@ const Title = styled('h2')`
     margin-top: 2px;
     margin-left: 4px;
     font-size: 20px;
+    padding-bottom: 2px;
 `
 
 const Subtitle = styled('div')`

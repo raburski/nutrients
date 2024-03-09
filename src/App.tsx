@@ -17,6 +17,7 @@ import FetchingDatabase from "./FetchingDatabase";
 import { useStorage } from "./storage";
 import { uploadFile } from "./functions";
 import { addNutrientDoses, deepCopy, getNutrientDosesFromProductDose, getNutrientsMissing } from "./nutrients";
+import { vilgainCacaoPowderProduct, vilgainOliveOilProduct } from "./types/products/vilgain";
 
 setupGoober(React.createElement)
 
@@ -70,6 +71,8 @@ const DEFAULT_SEARCH_LIST = [
   atheticGreens,
   bananaProduct,
   wheyProduct,
+  vilgainCacaoPowderProduct,
+  vilgainOliveOilProduct,
 ]
 
 function App() {
