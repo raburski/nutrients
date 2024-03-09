@@ -53,7 +53,7 @@ function calcCalorieDoes(doses) {
 }
 
 export default function NutrientList({ nutrientDoses = [], showNames = false, onlyProvided = false }) {
-    const nutrients = onlyProvided ? nutrientDoses.map(d => d.nutrient) : allNutrients
+    const nutrients = onlyProvided ? allNutrients.filter(nutrient => nutrientDoses.filter(dose => dose.nutrient === nutrient).length > 0) : allNutrients
     const calorieDose = calcCalorieDoes(nutrientDoses)
     function shouldSeparate(nutrient) {
         return nutrient === 'Fat' || nutrient === 'Zinc'

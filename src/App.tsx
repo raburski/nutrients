@@ -4,7 +4,7 @@ import './App.css';
 import { setup as setupGoober, styled } from 'goober'
 import { NutrientAmount, NutrientDose, NutrientUnit, allNutrients, Micronutrient, ProductDose, Product } from "./types/nutrient";
 import { nutrientsMan32 } from "./types/doses";
-import { athelticGreensDoses, atheticGreens, atheticGreensOneServing, bananaProduct, wheyProduct } from "./types/products";
+import { athelticGreensDoses, atheticGreensOneServing, allProducts } from "./types/products";
 import NutrientList from "./NutrientList";
 import productsDatabase from "./fdc";
 import useDebouncedInput from "./useDebouncedInput";
@@ -17,7 +17,6 @@ import FetchingDatabase from "./FetchingDatabase";
 import { useStorage } from "./storage";
 import { uploadFile } from "./functions";
 import { addNutrientDoses, deepCopy, getNutrientDosesFromProductDose, getNutrientsMissing } from "./nutrients";
-import { vilgainCacaoPowderProduct, vilgainOliveOilProduct } from "./types/products/vilgain";
 
 setupGoober(React.createElement)
 
@@ -67,13 +66,7 @@ function useFetchDatabase() {
 const DEFAULT_SECTION_TITLE = '_default'
 const DEFAULT_SECTIONS = { [DEFAULT_SECTION_TITLE]: [atheticGreensOneServing] }
 
-const DEFAULT_SEARCH_LIST = [
-  atheticGreens,
-  bananaProduct,
-  wheyProduct,
-  vilgainCacaoPowderProduct,
-  vilgainOliveOilProduct,
-]
+const DEFAULT_SEARCH_LIST = allProducts
 
 function App() {
   const [selectedSection, setSelectedSection] = useState(DEFAULT_SECTION_TITLE)
