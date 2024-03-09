@@ -12,6 +12,9 @@ const UNIT_CONVERSION_MATRIX: any = {
     [NutrientUnit.G]: 0.001,
     [NutrientUnit.MG_NE]: 1,
   },
+  [NutrientUnit.MG_NE]: {
+    [NutrientUnit.MG]: 1,
+  }
 }
 
 export function deepCopy<T>(object: T): T {

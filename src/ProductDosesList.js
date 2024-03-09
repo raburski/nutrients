@@ -17,6 +17,7 @@ const Container = styled('div')`
 
     cursor: pointer;
     overflow: hidden;
+    flex-shrink: 0;
 `
 
 const Title = styled('h2')`

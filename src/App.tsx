@@ -34,7 +34,6 @@ const Column = styled('div')`
   white-space: pre;
   max-height: 100vh;
   overflow: scroll;
-
 `
 
 const Row = styled('div')`
@@ -50,7 +49,14 @@ const SectionTitle = styled('div')`
   margin-top: 12px;
 `
 
-
+const ProductDosesContainer = styled('div')`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  white-space: pre;
+  overflow: scroll;
+  padding-bottom: 12px;
+`
 
 function useFetchDatabase() {
   const [fetching, setFetching] = useState(false)
@@ -162,25 +168,27 @@ function App() {
         </Column>
         <Column>
           <SectionTitle>SELECTED:</SectionTitle>
-          {sectionNames ? sectionNames.map(s => 
-            <ProductDosesList
-              key={s}
-              name={s}
-              isSelected={s === selectedSection}
-              isCollapsed={collapsedSections.includes(s)}
-              isDefault={s === DEFAULT_SECTION_TITLE}
-              checked={selectedSections.includes(s)}
-              productDoses={sections[s]}
-              onClick={() => setSelectedSection(s)}
-              onRemoveProductDoseClick={onRemoveProductDoseClick}
-              onCollapse={onSectionCollapseClick(s)}
-              onSave={onProductDosesSectionSave}
-              onCheckChange={onProductDoseCheckChange}
-              onProductDoseClick={onProductDoseClick}
-              onRemoveClick={onProductDoseListRemoveClick(s)}
-              onProductDoseValueChange={onProductDoseValueChange(s)}
-              onUploadClick={onUploadClick}
-            />) : null}
+          <ProductDosesContainer>
+            {sectionNames ? sectionNames.map(s => 
+              <ProductDosesList
+                key={s}
+                name={s}
+                isSelected={s === selectedSection}
+                isCollapsed={collapsedSections.includes(s)}
+                isDefault={s === DEFAULT_SECTION_TITLE}
+                checked={selectedSections.includes(s)}
+                productDoses={sections[s]}
+                onClick={() => setSelectedSection(s)}
+                onRemoveProductDoseClick={onRemoveProductDoseClick}
+                onCollapse={onSectionCollapseClick(s)}
+                onSave={onProductDosesSectionSave}
+                onCheckChange={onProductDoseCheckChange}
+                onProductDoseClick={onProductDoseClick}
+                onRemoveClick={onProductDoseListRemoveClick(s)}
+                onProductDoseValueChange={onProductDoseValueChange(s)}
+                onUploadClick={onUploadClick}
+              />) : null}
+            </ProductDosesContainer>
         </Column>
       </Row>
       <Row style={{flex: 0.7}}>
