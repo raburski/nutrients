@@ -202,7 +202,7 @@ function App() {
         </Column>
         <Column>
           <SectionTitle>MISSING:</SectionTitle>
-          <NutrientList nutrientDoses={missing}/>
+          <NutrientList nutrientDoses={missing} optimalNutrientDoses={nutrientsMan32}/>
         </Column>
       </Row>
       <Modal isOpen={!!selectedProduct} onClickAway={() => setSelectedProduct(undefined)}>
