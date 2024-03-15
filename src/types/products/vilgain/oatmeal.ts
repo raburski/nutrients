@@ -20,6 +20,7 @@ const nutrients: NutrientDose[] = [
 export const vilgainOatmeal: Product = {
     id: 'vilgainOatmeal',
     name: 'Vilgain Oatmeal',
+    url: 'https://vilgain.pl/vilgain-platki-owsiane-blyskawiczne/4x32076',
     nutrientsPer100g: nutrients
 }
 

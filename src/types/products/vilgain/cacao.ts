@@ -11,6 +11,7 @@ const cacaoNutrients: NutrientDose[] = [
 export const vilgainCacaoPowderProduct: Product = {
     id: 'vilgainCacaoPowder',
     name: 'Vilgain Cacao Powder',
+    url: 'https://vilgain.pl/vilgain-kakao-nieprazone/150-g-34410',
     nutrientsPer100g: cacaoNutrients
 }
 

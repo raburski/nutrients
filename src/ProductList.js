@@ -1,4 +1,5 @@
 import { styled } from "goober";
+import EmojiButton from "./EmojiButton";
 
 const Container = styled('div')`
     display: flex;
@@ -46,15 +47,20 @@ const Button = styled('button')`
     font-size: 12px;
 `
 
-function ProductRow({ product, highlightNutrient, onAddClick, onClick }) {
+function ProductRow({ product, highlightNutrient, onAddClick, onClick, onLinkClick }) {
     const nutrientDose = highlightNutrient ? product.nutrientsPer100g?.find(n => n.nutrient === highlightNutrient) : undefined
     const value = nutrientDose ? `${nutrientDose.amount.value} ${nutrientDose.amount.unit}` : undefined
     return (
-        <Row onClick={onClick}><RowTitle>{product.name}</RowTitle> <RowValue>{value}</RowValue><Button onClick={onAddClick}>+</Button></Row>
+        <Row onClick={onClick}><RowTitle>{product.name}</RowTitle> <RowValue>{value}</RowValue>{onLinkClick ? <EmojiButton onClick={onLinkClick}>🔗</EmojiButton> : null}<EmojiButton onClick={onAddClick}>➕</EmojiButton></Row>
     )
 }
 
 export default function ProductList({ products = [], highlightNutrient, onAddClick, onClick }) {
+    const onLinkClick = (product) => product.url ? (e) => {
+        e.cancelBubble = true
+        e.stopPropagation && e.stopPropagation()
+        window.open(product.url)
+    } : null
     return (
         <Container>
             {products.map(product => 
@@ -67,6 +73,7 @@ export default function ProductList({ products = [], highlightNutrient, onAddCli
                         onAddClick(product)
                     }}
                     onClick={() => onClick(product)}
+                    onLinkClick={onLinkClick(product)}
                 />
             )}
         </Container>

@@ -31,6 +31,7 @@ export const athelticGreensDoses: NutrientDose[] = [
 const atheticGreens: Product = {
     id: 'athleticGreens',
     name: 'Athletic Greens',
+    url: 'https://drinkag1.com/',
     nutrientsPerServing: athelticGreensDoses,
 }
 

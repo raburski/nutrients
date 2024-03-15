@@ -62,6 +62,7 @@ export interface NutrientDose {
 export interface Product {
     id?: string
     name: string
+    url?: string
     nutrientsPerServing?: NutrientDose[]
     nutrientsPer100g?: NutrientDose[]
 }

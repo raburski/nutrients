@@ -19,6 +19,7 @@ import { uploadFile } from "./functions";
 import { addNutrientDoses, deepCopy, getNutrientDosesFromProductDose, getNutrientsMissing } from "./nutrients";
 import EmojiButton from "./EmojiButton";
 import Cart from "./Cart";
+import Spacer from "./Spacer";
 
 setupGoober(React.createElement)
 
@@ -61,11 +62,6 @@ const ProductDosesContainer = styled('div')`
   white-space: pre;
   overflow: scroll;
   padding-bottom: 12px;
-`
-
-const Spacer = styled('div')`
-  display: flex;
-  flex: 1;
 `
 
 function useFetchDatabase() {

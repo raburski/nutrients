@@ -13,6 +13,7 @@ const nutrients: NutrientDose[] = [
 export const vilgainGreensMix: Product = {
     id: 'vilgainGreensMix',
     name: 'Vilgain Greens Mix',
+    url: 'https://vilgain.pl/vilgain-greens-mix/lemoniada-300-g-43268',
     nutrientsPer100g: nutrients
 }
 

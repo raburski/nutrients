@@ -1,4 +1,5 @@
 import { styled } from "goober"
+import Spacer from "./Spacer"
 
 const Container = styled('div')`
     padding: 12px;
@@ -32,10 +33,14 @@ export default function Cart({ sections }) {
         return firstIndex === index
     })
 
+    const onProductClick = (product) => product.url ? () => {
+        window.open(product.url)
+    } : null
+
     return (
         <Container>
             <Title>All products</Title>
-            {filteredProducts.map(product => <ProductRow>{product.name}</ProductRow>)}
+            {filteredProducts.map(product => <ProductRow onClick={onProductClick(product)}>{product.name}<Spacer />{product.url ? '🔗' : ''}</ProductRow>)}
         </Container>
     )
 }

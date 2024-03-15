@@ -7,6 +7,7 @@ const oilNutrients: NutrientDose[] = [
 export const vilgainOliveOilProduct: Product = {
     id: 'vilgainOliveOil',
     name: 'Vilgain Olive Oil',
+    url: 'https://vilgain.pl/vilgain-oliwa-z-oliwek-extra-virgin-bio/750-ml-43267',
     nutrientsPer100g: oilNutrients
 }
 

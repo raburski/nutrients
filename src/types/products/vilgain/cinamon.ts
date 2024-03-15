@@ -11,6 +11,7 @@ const nutrients: NutrientDose[] = [
 export const vilgainCinamonPowderProduct: Product = {
     id: 'vilgainCinamonPowder',
     name: 'Vilgain Cinamon Powder',
+    url: 'https://vilgain.pl/vilgain-cynamon-cejlonski-bio/mielona-150-g-37469',
     nutrientsPer100g: nutrients
 }
 
