@@ -6,6 +6,7 @@ import vilgainOliveOilProduct from './vilgain/oliveOil'
 import vilgainCinamonPowderProduct from './vilgain/cinamon'
 import vilgainGreensMix from './vilgain/greensMix'
 import vilgainOatmeal from './vilgain/oatmeal'
+import vilgainProteinBar from './vilgain/proteinBar'
 
 export { atheticGreensOneServing, athelticGreensDoses } from './ag1'
 
@@ -17,5 +18,6 @@ export const allProducts = [
     vilgainOliveOilProduct,
     vilgainCinamonPowderProduct,
     vilgainGreensMix,
-    vilgainOatmeal
+    vilgainOatmeal,
+    vilgainProteinBar
 ]
