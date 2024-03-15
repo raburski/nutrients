@@ -15,7 +15,7 @@ import Modal from "./Modal";
 import ProductInfo from "./ProductInfo";
 import FetchingDatabase from "./FetchingDatabase";
 import { useStorage } from "./storage";
-import { uploadFile } from "./functions";
+import { downloadString, uploadFile } from "./functions";
 import { addNutrientDoses, deepCopy, getNutrientDosesFromProductDose, getNutrientsMissing } from "./nutrients";
 import EmojiButton from "./EmojiButton";
 import Cart from "./Cart";
@@ -141,8 +141,15 @@ function App() {
 
   async function onUploadClick() {
     const file = await uploadFile('json')
-    const meal = await JSON.parse(file)
-    const newSections = { ...sections, [meal.name]: meal.doses }
+    const meals = await JSON.parse(file)
+    const newMealNames = Object.keys(meals).forEach(name => {
+      if (sections[name]) {
+        meals[`${name}_`] = meals[name]
+        delete meals[name]
+      }
+    })
+
+    const newSections = { ...sections, ...meals }
     setSections(newSections)
   }
 
@@ -155,6 +162,12 @@ function App() {
     }
     await setCollapsedSections(newCollapsedSections)
   }
+
+  const onDownloadClick = () => {
+    const { "_default": def, ...meals } = sections
+    const string = JSON.stringify(meals)
+    downloadString(string, 'json', `meals.json`)
+}
 
   const productsFound = searchPhrase ? productsDatabase.getFood(searchPhrase as any as string) : undefined
   const topNutrientProducts = selectedNutrient ? productsDatabase.getFoodsWithMost(selectedNutrient, 200) : DEFAULT_SEARCH_LIST
@@ -176,7 +189,13 @@ function App() {
           {displayProducts ? <ProductList products={displayProducts} highlightNutrient={selectedNutrient} onAddClick={onAddProductClick} onClick={onProductClick}/> : null}
         </Column>
         <Column>
-          <SectionTitle>SELECTED:<Spacer /><EmojiButton onClick={onCartClick}>🛒</EmojiButton></SectionTitle>
+          <SectionTitle>
+            SELECTED:
+            <Spacer />
+            <EmojiButton onClick={onUploadClick}>⬆️</EmojiButton>
+            <EmojiButton onClick={onDownloadClick}>⬇️</EmojiButton>
+            <EmojiButton onClick={onCartClick}>🛒</EmojiButton>
+          </SectionTitle>
           <ProductDosesContainer>
             {sectionNames ? sectionNames.map(s => 
               <ProductDosesList
@@ -195,7 +214,6 @@ function App() {
                 onProductDoseClick={onProductDoseClick}
                 onRemoveClick={onProductDoseListRemoveClick(s)}
                 onProductDoseValueChange={onProductDoseValueChange(s)}
-                onUploadClick={onUploadClick}
               />) : null}
             </ProductDosesContainer>
         </Column>
