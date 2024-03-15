@@ -31,7 +31,6 @@ const RowValue = styled('div')`
 function NutrientRow({ nutrient, showName, nutrientDose = {}, optimalNutrientDose = {}, separated = false }) {
     const isCovered = nutrientDose.amount && nutrientDose.amount.value < 0
     const isTooHigh = nutrientDose.amount && optimalNutrientDose.amount && (-1 * nutrientDose.amount.value > optimalNutrientDose.amount.value * 2)
-    console.log('optimalNutrientDose', nutrientDose.amount?.value, optimalNutrientDose.amount?.value)
     const value = nutrientDose?.amount ? Math.round(nutrientDose?.amount?.value * 100)/100 : undefined
     return (
         <Row separated={separated}><RowTitle>{isCovered ? '✅ ' : null}{isTooHigh ? '🟡 ' : null}{showName ? nutrient : ''}</RowTitle> <RowValue>{value} {nutrientDose?.amount?.unit}</RowValue></Row>

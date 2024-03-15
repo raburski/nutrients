@@ -17,6 +17,8 @@ import FetchingDatabase from "./FetchingDatabase";
 import { useStorage } from "./storage";
 import { uploadFile } from "./functions";
 import { addNutrientDoses, deepCopy, getNutrientDosesFromProductDose, getNutrientsMissing } from "./nutrients";
+import EmojiButton from "./EmojiButton";
+import Cart from "./Cart";
 
 setupGoober(React.createElement)
 
@@ -44,9 +46,12 @@ const Row = styled('div')`
 `
 
 const SectionTitle = styled('div')`
+  display: flex;
+  flex-direction: row;
   font-weight: bold;
   margin-bottom: 8px;
   margin-top: 12px;
+  margin-right: 28px;
 `
 
 const ProductDosesContainer = styled('div')`
@@ -56,6 +61,11 @@ const ProductDosesContainer = styled('div')`
   white-space: pre;
   overflow: scroll;
   padding-bottom: 12px;
+`
+
+const Spacer = styled('div')`
+  display: flex;
+  flex: 1;
 `
 
 function useFetchDatabase() {
@@ -83,7 +93,10 @@ function App() {
   const [sections, setSections] = useStorage('sections', DEFAULT_SECTIONS)
   const [selectedSections, setSelectedSections] = useStorage('selectedSections', [DEFAULT_SECTION_TITLE])
   const [collapsedSections, setCollapsedSections] = useStorage('collapsedSections', [])
+  const [isShowingCart, setIsShowingCart] = useState(false)
   const sectionNames = Object.keys(sections)
+
+  const onCartClick = () => setIsShowingCart(!isShowingCart)
 
   const onNutrientSelectChange = (e: any) => {
     setSelectedNutrient(e.target.value)
@@ -167,7 +180,7 @@ function App() {
           {displayProducts ? <ProductList products={displayProducts} highlightNutrient={selectedNutrient} onAddClick={onAddProductClick} onClick={onProductClick}/> : null}
         </Column>
         <Column>
-          <SectionTitle>SELECTED:</SectionTitle>
+          <SectionTitle>SELECTED:<Spacer /><EmojiButton onClick={onCartClick}>🛒</EmojiButton></SectionTitle>
           <ProductDosesContainer>
             {sectionNames ? sectionNames.map(s => 
               <ProductDosesList
@@ -207,6 +220,9 @@ function App() {
       </Row>
       <Modal isOpen={!!selectedProduct} onClickAway={() => setSelectedProduct(undefined)}>
          {selectedProduct ? <ProductInfo product={selectedProduct}/> : null}
+      </Modal>
+      <Modal isOpen={isShowingCart} onClickAway={onCartClick}>
+          <Cart sections={sections}/>
       </Modal>
       {fetchingDatabase ? <FetchingDatabase /> : null}
     </AppContainer>

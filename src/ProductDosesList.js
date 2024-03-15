@@ -56,12 +56,6 @@ const RowTitle = styled('div')`
     font-size: 12px;
 `
 
-const RowValue = styled('div')`
-    display: flex;
-    font-size: 12px;
-    margin-left: 12px;
-`
-
 const RowValueInput = styled('input')`
     text-align: right;
     margin-right: 4px;
