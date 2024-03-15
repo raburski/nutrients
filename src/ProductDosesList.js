@@ -95,6 +95,11 @@ function cancelEvent(e) {
     e.stopPropagation && e.stopPropagation()
 }
 
+const truncateString = (string = '', maxLength = 50) => 
+  string.length > maxLength 
+    ? `${string.substring(0, maxLength)}…`
+    : string
+
 function ProductDoseRow({ productDose, onRemoveClick, onClick, onValueChange }) {
     const initialValue = productDose.servings ? productDose.servings : productDose.grams
     const [value, onInputValueChange] = useDebouncedInput()
@@ -106,7 +111,7 @@ function ProductDoseRow({ productDose, onRemoveClick, onClick, onValueChange }) 
         }
     }, [value])
     return (
-        <Row onClick={onClick}><RowTitle>{productDose.product.name}</RowTitle> <RowValueInput type="text" defaultValue={initialValue} onFocus={cancelEvent} onClick={cancelEvent} onChange={onInputValueChange}/> {unit}{onRemoveClick ? <Button onClick={onRemoveClick}>✕</Button> : null }</Row>
+        <Row onClick={onClick}><RowTitle>{truncateString(productDose.product.name, 50)}</RowTitle> <RowValueInput type="text" defaultValue={initialValue} onFocus={cancelEvent} onClick={cancelEvent} onChange={onInputValueChange}/> {unit}{onRemoveClick ? <Button onClick={onRemoveClick}>✕</Button> : null }</Row>
     )
 }
 
