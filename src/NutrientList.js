@@ -1,5 +1,5 @@
 import { styled } from "goober";
-import { NutrientAmount, NutrientDose, NutrientUnit, allNutrients } from "./types/nutrient";
+import { NutrientAmount, NutrientDose, NutrientUnit, allNutrients, waterSoluableNutrients } from "./types/nutrient";
 
 const Container = styled('div')`
     display: flex;
@@ -32,8 +32,9 @@ function NutrientRow({ nutrient, showName, nutrientDose = {}, optimalNutrientDos
     const isCovered = nutrientDose.amount && nutrientDose.amount.value < 0
     const isTooHigh = nutrientDose.amount && optimalNutrientDose.amount && (-1 * nutrientDose.amount.value > optimalNutrientDose.amount.value * 2)
     const value = nutrientDose?.amount ? Math.round(nutrientDose?.amount?.value * 100)/100 : undefined
+    const tooHighIcon = waterSoluableNutrients.includes(nutrient) ? '💧' : '🟡'
     return (
-        <Row separated={separated}><RowTitle>{isCovered ? '✅ ' : null}{isTooHigh ? '🟡 ' : null}{showName ? nutrient : ''}</RowTitle> <RowValue>{value} {nutrientDose?.amount?.unit}</RowValue></Row>
+        <Row separated={separated}><RowTitle>{isCovered ? '✅ ' : null}{isTooHigh ? `${tooHighIcon} ` : null}{showName ? nutrient : ''}</RowTitle> <RowValue>{value} {nutrientDose?.amount?.unit}</RowValue></Row>
     )
 }
 

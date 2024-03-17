@@ -39,6 +39,19 @@ export enum Macronutrient {
 export type Nutrient = Macronutrient | Micronutrient
 
 export const allNutrients = [...Object.values(Macronutrient), ...Object.values(Micronutrient)]
+export const waterSoluableNutrients = [
+    Micronutrient.VitaminB1,
+    Micronutrient.VitaminB2,
+    Micronutrient.VitaminB3,
+    Micronutrient.VitaminB5,
+    Micronutrient.VitaminB6,
+    Micronutrient.VitaminB7,
+    Micronutrient.VitaminB9,
+    Micronutrient.VitaminB12,
+    Micronutrient.VitaminC,
+    Micronutrient.Potassium,
+    Micronutrient.Sodium,
+]
 
 export enum NutrientUnit {
     G = "g", // grams
