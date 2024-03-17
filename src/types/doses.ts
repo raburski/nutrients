@@ -19,11 +19,11 @@ export const macronutrientsMan32: NutrientDose[] = [
 export const micronutrientsMan32: NutrientDose[] = [
     {
       nutrient: Micronutrient.VitaminA, // Bryan 1800
-      amount: { value: 900, unit: NutrientUnit.MCG_RAE },
+      amount: { value: 1300, unit: NutrientUnit.MCG_RAE },
     },
     {
       nutrient: Micronutrient.VitaminC, // 950
-      amount: { value: 800, unit: NutrientUnit.MG },
+      amount: { value: 950, unit: NutrientUnit.MG },
     },
     {
       nutrient: Micronutrient.VitaminD,
@@ -35,15 +35,15 @@ export const micronutrientsMan32: NutrientDose[] = [
     },
     {
       nutrient: Micronutrient.VitaminK, // 580
-      amount: { value: 120, unit: NutrientUnit.MCG },
+      amount: { value: 400, unit: NutrientUnit.MCG },
     },
     {
       nutrient: Micronutrient.VitaminB1, // Bryan 2.8
-      amount: { value: 1.2, unit: NutrientUnit.MG },
+      amount: { value: 2, unit: NutrientUnit.MG },
     },
     {
       nutrient: Micronutrient.VitaminB2, // Brayn 2.0
-      amount: { value: 1.3, unit: NutrientUnit.MG },
+      amount: { value: 2, unit: NutrientUnit.MG },
     },
     {
       nutrient: Micronutrient.VitaminB3, // 2.8
@@ -51,7 +51,7 @@ export const micronutrientsMan32: NutrientDose[] = [
     },
     {
       nutrient: Micronutrient.VitaminB6, // 3.5
-      amount: { value: 1.7, unit: NutrientUnit.MG },
+      amount: { value: 3, unit: NutrientUnit.MG },
     },
     {
       nutrient: Micronutrient.VitaminB9,
@@ -63,7 +63,7 @@ export const micronutrientsMan32: NutrientDose[] = [
     },
     {
       nutrient: Micronutrient.VitaminB7, // 42
-      amount: { value: 30, unit: NutrientUnit.MCG },
+      amount: { value: 42, unit: NutrientUnit.MCG },
     },
     {
       nutrient: Micronutrient.VitaminB5,
@@ -71,7 +71,7 @@ export const micronutrientsMan32: NutrientDose[] = [
     },
     {
       nutrient: Micronutrient.Calcium, // 2500
-      amount: { value: 1000, unit: NutrientUnit.MG },
+      amount: { value: 2000, unit: NutrientUnit.MG },
     },
     {
       nutrient: Micronutrient.Iron,
