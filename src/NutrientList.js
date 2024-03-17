@@ -31,10 +31,19 @@ const RowValue = styled('div')`
 function NutrientRow({ nutrient, showName, nutrientDose = {}, optimalNutrientDose = {}, separated = false }) {
     const isCovered = nutrientDose.amount && nutrientDose.amount.value < 0
     const isTooHigh = nutrientDose.amount && optimalNutrientDose.amount && (-1 * nutrientDose.amount.value > optimalNutrientDose.amount.value * 1.2)
+    const isTooLow = nutrientDose.amount && optimalNutrientDose.amount && (nutrientDose.amount.value > optimalNutrientDose.amount.value * 0.7)
     const value = nutrientDose?.amount ? Math.round(nutrientDose?.amount?.value * 100)/100 : undefined
     const tooHighIcon = waterSoluableNutrients.includes(nutrient) ? '💧' : '🟡'
     return (
-        <Row separated={separated}><RowTitle>{isCovered ? '✅ ' : null}{isTooHigh ? `${tooHighIcon} ` : null}{showName ? nutrient : ''}</RowTitle> <RowValue>{value} {nutrientDose?.amount?.unit}</RowValue></Row>
+        <Row separated={separated}>
+            <RowTitle>
+                {isCovered ? '✅ ' : null}
+                {isTooHigh ? `${tooHighIcon} ` : null}
+                {isTooLow ? '🆘 ' : null}
+                {showName ? nutrient : ''}
+            </RowTitle> 
+            <RowValue>{value} {nutrientDose?.amount?.unit}</RowValue>
+        </Row>
     )
 }
 
