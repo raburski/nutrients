@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { setup as setupGoober, styled } from 'goober'
-import { NutrientAmount, NutrientDose, NutrientUnit, allNutrients, Micronutrient, ProductDose, Product } from "./types/nutrient";
+import { NutrientAmount, NutrientDose, NutrientUnit, allNutrients, Micronutrient, ProductDose, Product, Nutrient } from "./types/nutrient";
 import { nutrientsMan32 } from "./types/doses";
 import { athelticGreensDoses, atheticGreensOneServing, allProducts } from "./types/products";
 import NutrientList from "./NutrientList";
@@ -16,10 +16,11 @@ import ProductInfo from "./ProductInfo";
 import FetchingDatabase from "./FetchingDatabase";
 import { useStorage } from "./storage";
 import { downloadString, uploadFile } from "./functions";
-import { addNutrientDoses, deepCopy, getNutrientDosesFromProductDose, getNutrientsMissing } from "./nutrients";
+import { addNutrientDoses, deepCopy, getNutrientDosesFromProductDose, getNutrientsMissing, getProductDoseNutrientAmount } from "./nutrients";
 import EmojiButton from "./EmojiButton";
 import Cart from "./Cart";
 import Spacer from "./Spacer";
+import SuppliedNutrientsBreakdown from "./SuppliedNutrientsBreakdown";
 
 setupGoober(React.createElement)
 
@@ -82,6 +83,7 @@ const DEFAULT_SEARCH_LIST = allProducts
 
 function App() {
   const [selectedSection, setSelectedSection] = useState(DEFAULT_SECTION_TITLE)
+  const [selectedSuppliedNutrient, setSelectedSuppliedNutrient] = useState<Nutrient>()
   const [fetchingDatabase] = useFetchDatabase()
   const [searchPhrase, onSearchChange, setSearchPhrase] = useDebouncedInput()
   const [selectedNutrient, setSelectedNutrient] = useState()
@@ -167,7 +169,31 @@ function App() {
     const { "_default": def, ...meals } = sections
     const string = JSON.stringify(meals)
     downloadString(string, 'json', `meals.json`)
-}
+  }
+
+  function productHasNutrient(product: Product, nutrient: Nutrient) {
+    return product.nutrientsPer100g?.find(n => n.nutrient === nutrient) !== undefined 
+      || product.nutrientsPerServing?.find(n => n.nutrient === nutrient) !== undefined
+  }
+
+
+
+  function getSortedProductDoses(nutrient: Nutrient | undefined) {
+    if (!nutrient) return null
+    const doses = selectedSections
+      .map((name: string) => sections[name])
+      .filter((n: any) => n && n.length)
+      .flatMap((n: any) => n)
+      .filter((dose: ProductDose) => productHasNutrient(dose.product, nutrient))
+    doses.sort((a: ProductDose, b: ProductDose) => {
+      return getProductDoseNutrientAmount(b, nutrient)!.value - getProductDoseNutrientAmount(a, nutrient)!.value
+    })
+    return doses
+  }
+
+  const onNutrientClick = (nutrient: Nutrient) => {
+    setSelectedSuppliedNutrient(nutrient)
+  }
 
   const productsFound = searchPhrase ? productsDatabase.getFood(searchPhrase as any as string) : undefined
   const topNutrientProducts = selectedNutrient ? productsDatabase.getFoodsWithMost(selectedNutrient, 200) : DEFAULT_SEARCH_LIST
@@ -221,14 +247,19 @@ function App() {
       <Row style={{flex: 0.7}}>
         <Column style={{flex: 1.7}}>
           <SectionTitle>REQUIRED (Man 32):</SectionTitle>
+          {/* @ts-ignore */} 
           <NutrientList nutrientDoses={nutrientsMan32} showNames/>
         </Column>
         <Column>
           <SectionTitle>SUPPLIED:</SectionTitle>
-          <NutrientList nutrientDoses={allProductNutrientDoses}/>
+          <NutrientList
+            nutrientDoses={allProductNutrientDoses}
+            onNutrientClick={onNutrientClick}
+          />
         </Column>
         <Column>
           <SectionTitle>MISSING:</SectionTitle>
+          {/* @ts-ignore */} 
           <NutrientList nutrientDoses={missing} optimalNutrientDoses={nutrientsMan32}/>
         </Column>
       </Row>
@@ -237,6 +268,9 @@ function App() {
       </Modal>
       <Modal isOpen={isShowingCart} onClickAway={onCartClick}>
           <Cart sections={sections}/>
+      </Modal>
+      <Modal isOpen={selectedSuppliedNutrient} onClickAway={() => setSelectedSuppliedNutrient(undefined)}>
+          <SuppliedNutrientsBreakdown nutrient={selectedSuppliedNutrient} doses={getSortedProductDoses(selectedSuppliedNutrient)}/>
       </Modal>
       {fetchingDatabase ? <FetchingDatabase /> : null}
     </AppContainer>

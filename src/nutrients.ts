@@ -1,4 +1,4 @@
-import { NutrientAmount, NutrientDose, NutrientUnit, ProductDose } from "./types/nutrient"
+import { Nutrient, NutrientAmount, NutrientDose, NutrientUnit, ProductDose } from "./types/nutrient"
 
 const UNIT_CONVERSION_MATRIX: any = {
   [NutrientUnit.G]: {
@@ -84,4 +84,16 @@ export function getNutrientDosesFromProductDose(pd: ProductDose): NutrientDose[]
     return pd.product.nutrientsPer100g!.map(n => ({ nutrient: n.nutrient, amount: { value: n.amount.value * pd.grams! / 100, unit: n.amount.unit } }))
   }
   return []
+}
+
+export function getProductDoseNutrientAmount(dose: ProductDose, nutrient: Nutrient): NutrientAmount | undefined {
+  const nutrientGramDose = dose.product.nutrientsPer100g?.find(d => d.nutrient === nutrient)
+  const nutrientServingDose = dose.product.nutrientsPerServing?.find(d => d.nutrient === nutrient)
+  if (nutrientGramDose) { 
+    return { value: (dose.grams || 0) * nutrientGramDose.amount.value / 100, unit: nutrientGramDose.amount.unit }
+  }
+  if (nutrientServingDose) {
+    return { value: (dose.servings || 0) * nutrientServingDose.amount.value / 100, unit: nutrientServingDose.amount.unit }
+  }
+  return undefined
 }

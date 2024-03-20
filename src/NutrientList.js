@@ -13,6 +13,11 @@ const Row = styled('div')`
     flex-direction: row;
     border-bottom: ${props => props.separated ? '2px' : '1px'} solid black;
     padding: 4px;
+
+    &:hover {
+        background-color: ${props => props.onClick ? '#e5e5e5' : 'transparent'};
+        cursor: ${props => props.onClick ? 'pointer' : 'default'};
+    }
 `
 
 const RowTitle = styled('div')`
@@ -28,14 +33,14 @@ const RowValue = styled('div')`
     font-size: 12px;
 `
 
-function NutrientRow({ nutrient, showName, nutrientDose = {}, optimalNutrientDose = {}, separated = false }) {
+function NutrientRow({ onClick, nutrient, showName, nutrientDose = {}, optimalNutrientDose = {}, separated = false }) {
     const isCovered = nutrientDose.amount && nutrientDose.amount.value < 0
     const isTooHigh = nutrientDose.amount && optimalNutrientDose.amount && (-1 * nutrientDose.amount.value > optimalNutrientDose.amount.value * 1.2)
     const isTooLow = nutrientDose.amount && optimalNutrientDose.amount && nutrientDose.amount.value !== optimalNutrientDose.amount.value && (nutrientDose.amount.value > optimalNutrientDose.amount.value * 0.3)
     const value = nutrientDose?.amount ? Math.round(nutrientDose?.amount?.value * 100)/100 : undefined
     const tooHighIcon = waterSoluableNutrients.includes(nutrient) ? '💧' : '🟡'
     return (
-        <Row separated={separated}>
+        <Row separated={separated} onClick={onClick}>
             <RowTitle>
                 {isCovered ? '✅ ' : null}
                 {isTooHigh ? `${tooHighIcon} ` : null}
@@ -63,7 +68,7 @@ function calcCalorieDoes(doses) {
     }
 }
 
-export default function NutrientList({ nutrientDoses = [], optimalNutrientDoses = [], showNames = false, onlyProvided = false }) {
+export default function NutrientList({ onNutrientClick, nutrientDoses = [], optimalNutrientDoses = [], showNames = false, onlyProvided = false }) {
     const nutrients = onlyProvided ? allNutrients.filter(nutrient => nutrientDoses.filter(dose => dose.nutrient === nutrient).length > 0) : allNutrients
     const calorieDose = calcCalorieDoes(nutrientDoses)
     function shouldSeparate(nutrient) {
@@ -75,6 +80,7 @@ export default function NutrientList({ nutrientDoses = [], optimalNutrientDoses 
             {nutrients.map(nutrient => {
                 return (
                     <NutrientRow
+                        onClick={onNutrientClick ? () => onNutrientClick(nutrient) : null}
                         separated={shouldSeparate(nutrient)}
                         nutrient={nutrient}
                         showName={showNames}
