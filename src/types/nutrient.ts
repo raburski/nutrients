@@ -85,3 +85,14 @@ export interface ProductDose {
     grams?: number
     servings?: number
 }
+
+export const nutrientsToxicity = {
+    [Micronutrient.VitaminA]: { value: 2600, unit: NutrientUnit.MCG_RAE },
+    [Micronutrient.VitaminD]: { value: 80, unit: NutrientUnit.MCG },
+    [Micronutrient.VitaminE]: { value: 800, unit: NutrientUnit.MG },
+    [Micronutrient.Manganese]: { value: 10, unit: NutrientUnit.MG },
+    [Micronutrient.Zinc]: { value: 35, unit: NutrientUnit.MG },
+    [Micronutrient.Iodine]: { value: 1000, unit: NutrientUnit.MCG },
+    [Micronutrient.Iron]: { value: 40, unit: NutrientUnit.MG },
+    [Micronutrient.Sodium]: { value: 2500, unit: NutrientUnit.MG },
+}

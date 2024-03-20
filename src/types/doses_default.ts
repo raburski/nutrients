@@ -90,7 +90,7 @@ export const micronutrientsMan32: NutrientDose[] = [
     },
     {
       nutrient: Micronutrient.Sodium,
-      amount: { value: 2300, unit: NutrientUnit.MG },
+      amount: { value: 2000, unit: NutrientUnit.MG },
     },
     {
       nutrient: Micronutrient.Zinc,

@@ -1,5 +1,6 @@
 import { styled } from "goober";
-import { NutrientAmount, NutrientDose, NutrientUnit, allNutrients, waterSoluableNutrients } from "./types/nutrient";
+import { NutrientAmount, NutrientDose, NutrientUnit, allNutrients, nutrientsToxicity, waterSoluableNutrients } from "./types/nutrient";
+import { subAmounts } from "./nutrients";
 
 const Container = styled('div')`
     display: flex;
@@ -37,6 +38,7 @@ function NutrientRow({ onClick, nutrient, showName, nutrientDose = {}, optimalNu
     const isCovered = nutrientDose.amount && nutrientDose.amount.value < 0
     const isTooHigh = nutrientDose.amount && optimalNutrientDose.amount && (-1 * nutrientDose.amount.value > optimalNutrientDose.amount.value * 1.2)
     const isTooLow = nutrientDose.amount && optimalNutrientDose.amount && nutrientDose.amount.value !== optimalNutrientDose.amount.value && (nutrientDose.amount.value > optimalNutrientDose.amount.value * 0.3)
+    const isToxic = nutrientDose.amount && nutrientsToxicity[nutrient] && subAmounts(nutrientDose.amount, nutrientsToxicity[nutrient]).value >= 0 
     const value = nutrientDose?.amount ? Math.round(nutrientDose?.amount?.value * 100)/100 : undefined
     const tooHighIcon = waterSoluableNutrients.includes(nutrient) ? '💧' : '🟡'
     return (
@@ -44,7 +46,8 @@ function NutrientRow({ onClick, nutrient, showName, nutrientDose = {}, optimalNu
             <RowTitle>
                 {isCovered ? '✅ ' : null}
                 {isTooHigh ? `${tooHighIcon} ` : null}
-                {isTooLow ? '🆘 ' : null}
+                {isTooLow ? '⬇️ ' : null}
+                {isToxic ? '🆘 TOXIC 🆘 ' : null}
                 {showName ? nutrient : ''}
             </RowTitle> 
             <RowValue>{value} {nutrientDose?.amount?.unit}</RowValue>

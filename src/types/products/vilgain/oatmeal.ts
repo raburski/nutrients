@@ -9,7 +9,7 @@ const nutrients: NutrientDose[] = [
     { nutrient: Micronutrient.VitaminB3, amount: { value: 4.3, unit: NutrientUnit.MG } },
     { nutrient: Micronutrient.VitaminB1, amount: { value: 0.33, unit: NutrientUnit.MG } },
     { nutrient: Micronutrient.Iron, amount: { value: 4.7, unit: NutrientUnit.MG } },
-    { nutrient: Micronutrient.Iodine, amount: { value: 20, unit: NutrientUnit.MCG } },
+    // { nutrient: Micronutrient.Iodine, amount: { value: 20, unit: NutrientUnit.MCG } },
     { nutrient: Micronutrient.Potassium, amount: { value: 414, unit: NutrientUnit.MG } },
     { nutrient: Micronutrient.Magnesium, amount: { value: 142, unit: NutrientUnit.MG } },
     { nutrient: Micronutrient.Phosphorus, amount: { value: 471, unit: NutrientUnit.MG } },

@@ -35,7 +35,7 @@ export default function SuppliedNutrientsBreakdown({ doses, nutrient }) {
                         <Size/>
                         <Spacer/>
                         {Math.round(nutrientAmount.value * 100)/100} 
-                        {nutrientAmount.unit}
+                        &nbsp;{nutrientAmount.unit}
                     </Row>
                 )
             })}

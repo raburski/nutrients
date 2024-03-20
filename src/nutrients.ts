@@ -1,4 +1,4 @@
-import { Nutrient, NutrientAmount, NutrientDose, NutrientUnit, ProductDose } from "./types/nutrient"
+import { Micronutrient, Nutrient, NutrientAmount, NutrientDose, NutrientUnit, ProductDose } from "./types/nutrient"
 
 const UNIT_CONVERSION_MATRIX: any = {
   [NutrientUnit.G]: {
@@ -93,7 +93,7 @@ export function getProductDoseNutrientAmount(dose: ProductDose, nutrient: Nutrie
     return { value: (dose.grams || 0) * nutrientGramDose.amount.value / 100, unit: nutrientGramDose.amount.unit }
   }
   if (nutrientServingDose) {
-    return { value: (dose.servings || 0) * nutrientServingDose.amount.value / 100, unit: nutrientServingDose.amount.unit }
+    return { value: (dose.servings || 0) * nutrientServingDose.amount.value, unit: nutrientServingDose.amount.unit }
   }
   return undefined
 }
