@@ -40,13 +40,13 @@ function NutrientRow({ onClick, nutrient, showName, nutrientDose = {}, optimalNu
     const isTooLow = nutrientDose.amount && optimalNutrientDose.amount && nutrientDose.amount.value !== optimalNutrientDose.amount.value && (nutrientDose.amount.value > optimalNutrientDose.amount.value * 0.3)
     const isToxic = nutrientDose.amount && nutrientsToxicity[nutrient] && subAmounts(nutrientDose.amount, nutrientsToxicity[nutrient]).value >= 0 
     const value = nutrientDose?.amount ? Math.round(nutrientDose?.amount?.value * 100)/100 : undefined
-    const tooHighIcon = waterSoluableNutrients.includes(nutrient) ? '💧' : '🟡'
+    const tooHighIcon = waterSoluableNutrients.includes(nutrient) ? '💧' : '⬆️'
     return (
         <Row separated={separated} onClick={onClick}>
             <RowTitle>
                 {isCovered ? '✅ ' : null}
                 {isTooHigh ? `${tooHighIcon} ` : null}
-                {isTooLow ? '⬇️ ' : null}
+                {isTooLow ? '🟡 ' : null}
                 {isToxic ? '🆘 TOXIC 🆘 ' : null}
                 {showName ? nutrient : ''}
             </RowTitle> 
