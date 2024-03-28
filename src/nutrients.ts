@@ -22,14 +22,22 @@ export function deepCopy<T>(object: T): T {
   return JSON.parse(JSON.stringify(object))
 }
 
+export function convertUnit(amount: NutrientAmount, unit: NutrientUnit): NutrientAmount | undefined {
+  if (amount.unit === unit) return amount
+  const conversionMultiple = UNIT_CONVERSION_MATRIX[amount.unit][unit]
+  if (amount && conversionMultiple !== undefined) {
+    return { unit, value: amount.value * conversionMultiple }
+  }
+  return undefined
+}
+
 export function amountOperation(a1: NutrientAmount, a2: NutrientAmount, operation: (n1: number, n2: number) => number): NutrientAmount {
     if (a1.unit === a2.unit) {
       return { unit: a1.unit, value: operation(a1.value, a2.value) }
     }
-    const conversionMultiple = UNIT_CONVERSION_MATRIX[a2.unit][a1.unit]
     // console.log('covert', a2.unit, 'to', a1.unit, 'by multiplying ', a2.unit, 'by', conversionMultiple)
-    if (conversionMultiple !== undefined) {
-      const convertedA2 = { unit: a1.unit, value: a2.value * conversionMultiple }
+    const convertedA2 = convertUnit(a2, a1.unit)
+    if (convertedA2 !== undefined) {
       return amountOperation(a1, convertedA2, operation)
     }
   
@@ -87,14 +95,16 @@ export function getNutrientDosesFromProductDose(pd: ProductDose): NutrientDose[]
   return []
 }
 
-export function getProductDoseNutrientAmount(dose: ProductDose, nutrient: Nutrient): NutrientAmount | undefined {
+export function getProductDoseNutrientAmount(dose: ProductDose, nutrient: Nutrient, unit?: NutrientUnit): NutrientAmount | undefined {
   const nutrientGramDose = dose.product.nutrientsPer100g?.find(d => d.nutrient === nutrient)
   const nutrientServingDose = dose.product.nutrientsPerServing?.find(d => d.nutrient === nutrient)
-  if (nutrientGramDose) { 
-    return { value: (dose.grams || 0) * nutrientGramDose.amount.value / 100, unit: nutrientGramDose.amount.unit }
+  if (nutrientGramDose) {
+    const amount = unit ? convertUnit(nutrientGramDose.amount, unit)! : nutrientGramDose.amount
+    return { value: (dose.grams || 0) * amount.value / 100, unit: amount.unit }
   }
   if (nutrientServingDose) {
-    return { value: (dose.servings || 0) * nutrientServingDose.amount.value, unit: nutrientServingDose.amount.unit }
+    const amount = unit ? convertUnit(nutrientServingDose.amount, unit)! : nutrientServingDose.amount
+    return { value: (dose.servings || 0) * amount.value, unit: amount.unit }
   }
   return undefined
 }

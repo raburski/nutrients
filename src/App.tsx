@@ -185,8 +185,17 @@ function App() {
       .filter((n: any) => n && n.length)
       .flatMap((n: any) => n)
       .filter((dose: ProductDose) => productHasNutrient(dose.product, nutrient))
+    const unitsUsed = doses.reduce((acc: any, dose: ProductDose) => {
+      const nutrientAmount = getProductDoseNutrientAmount(dose, nutrient)
+      if (nutrientAmount) {
+        acc[nutrientAmount.unit] = (acc[nutrientAmount.unit] || 0) + 1
+      }
+      return acc
+    }, {})
+    const mostUnitsUsed = Object.keys(unitsUsed).sort((a: string, b: string) => unitsUsed[b] - unitsUsed[a])
+    const mostUsedUnit = mostUnitsUsed[0]
     doses.sort((a: ProductDose, b: ProductDose) => {
-      return getProductDoseNutrientAmount(b, nutrient)!.value - getProductDoseNutrientAmount(a, nutrient)!.value
+      return getProductDoseNutrientAmount(b, nutrient, mostUsedUnit as NutrientUnit)!.value - getProductDoseNutrientAmount(a, nutrient, mostUsedUnit as NutrientUnit)!.value
     })
     return doses
   }
