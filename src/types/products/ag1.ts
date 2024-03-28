@@ -22,7 +22,7 @@ export const athelticGreensDoses: NutrientDose[] = [
     { nutrient: Micronutrient.Zinc, amount: { value: 15, unit: NutrientUnit.MG }},
     { nutrient: Micronutrient.Selenium, amount: { value: 20, unit: NutrientUnit.MCG }},
     { nutrient: Micronutrient.Copper, amount: { value: 195, unit: NutrientUnit.MCG }},
-    { nutrient: Micronutrient.Manganese, amount: { value: 400, unit: NutrientUnit.MCG }},
+    // { nutrient: Micronutrient.Manganese, amount: { value: 400, unit: NutrientUnit.MCG }},
     { nutrient: Micronutrient.Chromium, amount: { value: 25, unit: NutrientUnit.MCG }},
     { nutrient: Micronutrient.Sodium, amount: { value: 45, unit: NutrientUnit.MG }},
     { nutrient: Micronutrient.Potassium, amount: { value: 300, unit: NutrientUnit.MG }},
