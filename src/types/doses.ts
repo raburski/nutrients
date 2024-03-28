@@ -71,7 +71,7 @@ export const micronutrientsMan32: NutrientDose[] = [
     },
     {
       nutrient: Micronutrient.Calcium, // 2500
-      amount: { value: 2000, unit: NutrientUnit.MG },
+      amount: { value: 1500, unit: NutrientUnit.MG },
     },
     {
       nutrient: Micronutrient.Iron,

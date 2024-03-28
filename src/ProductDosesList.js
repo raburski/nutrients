@@ -152,6 +152,7 @@ export default function ProductDosesList({ isDefault, isSelected, isCollapsed, n
             </Controls>
             {!isCollapsed && productDoses.map(productDose => 
                 <ProductDoseRow
+                    key={`${name}:${productDose.product.name}`}
                     productDose={productDose}
                     onClick={(e) => { cancelEvent(e); onProductDoseClick(productDose)} }
                     onValueChange={onProductDoseValueChange}

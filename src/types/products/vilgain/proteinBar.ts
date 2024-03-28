@@ -8,11 +8,11 @@ const nutrients: NutrientDose[] = [
     { nutrient: Micronutrient.Fiber, amount: { value: 10, unit: NutrientUnit.G } },
 ]
 
-export const vilgainOliveOilProduct: Product = {
+export const product: Product = {
     id: 'vilgainNutsProteinBar',
     name: 'Vilgain Protein Bar Orzeszki Karmel',
     url: 'https://vilgain.pl/vilgain-double-trouble-protein-bar/12x43140',
     nutrientsPer100g: nutrients
 }
 
-export default vilgainOliveOilProduct
+export default product

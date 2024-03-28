@@ -8,6 +8,7 @@ import vilgainGreensMix from './vilgain/greensMix'
 import vilgainOatmeal from './vilgain/oatmeal'
 import vilgainProteinBar from './vilgain/proteinBar'
 import orangeProduct from "./orange"
+import vilgainCannedTuna from './vilgain/tuna'
 
 export { atheticGreensOneServing, athelticGreensDoses } from './ag1'
 
@@ -21,5 +22,6 @@ export const allProducts = [
     vilgainGreensMix,
     vilgainOatmeal,
     vilgainProteinBar,
+    vilgainCannedTuna,
     orangeProduct,
 ]
