@@ -83,6 +83,7 @@ export default function NutrientList({ onNutrientClick, nutrientDoses = [], opti
             {nutrients.map(nutrient => {
                 return (
                     <NutrientRow
+                        key={nutrient}
                         onClick={onNutrientClick ? () => onNutrientClick(nutrient) : null}
                         separated={shouldSeparate(nutrient)}
                         nutrient={nutrient}

@@ -1,11 +1,10 @@
 import { styled } from "goober";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import useDebouncedInput from "./useDebouncedInput";
-import { downloadString } from "./functions";
 import EmojiButton from "./EmojiButton";
 import { addNutrientDoses, getNutrientDosesFromProductDose } from "./nutrients";
 
-const Container = styled('div')`
+const Container = styled('div', React.forwardRef)`
     display: flex;
     flex-direction: column;
     margin-right: 22px;
@@ -115,7 +114,7 @@ function ProductDoseRow({ productDose, onRemoveClick, onClick, onValueChange }) 
     )
 }
 
-export default function ProductDosesList({ isDefault, isSelected, isCollapsed, name, checked = false, productDoses = [], onRemoveProductDoseClick, onClick, onProductDoseClick, onCollapse, onRemoveClick = () => {}, onCheckChange = (a, b) => {}, onSave = (prod, name) => {}, onProductDoseValueChange }) {
+export default function ProductDosesList({ innerRef, isDefault, isSelected, isCollapsed, name, checked = false, productDoses = [], onRemoveProductDoseClick, onClick, onProductDoseClick, onCollapse, onRemoveClick = () => {}, onCheckChange = (a, b) => {}, onSave = (prod, name) => {}, onProductDoseValueChange, ...props }) {
     const [saveName, setSaveName] = useState('')
     const onSaveChange = (e) => setSaveName(e.target.value)
     const onSaveClick = (e) => {
@@ -138,7 +137,7 @@ export default function ProductDosesList({ isDefault, isSelected, isCollapsed, n
     const macroString = carbs ? `C: ${Math.round(carbs.amount.value)}, P: ${Math.round(protein.amount.value)}, F: ${Math.round(fat.amount.value)}` : null
 
     return (
-        <Container isSelected={isSelected} onClick={onContainerClick}>
+        <Container isSelected={isSelected} ref={innerRef} onClick={onContainerClick} {...props}>
             <Controls>
                 {isDefault ? <><input type="text" value={saveName} onChange={onSaveChange} placeholder="Meal name"/><button onClick={onSaveClick}>save</button><Spread /></> : null}
                 {!isDefault ? 

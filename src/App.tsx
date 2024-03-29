@@ -20,7 +20,8 @@ import { addNutrientDoses, deepCopy, getNutrientDosesFromProductDose, getNutrien
 import EmojiButton from "./EmojiButton";
 import Cart from "./Cart";
 import Spacer from "./Spacer";
-import SuppliedNutrientsBreakdown from "./SuppliedNutrientsBreakdown";
+import SuppliedNutrientsBreakdown from "./SuppliedNutrientsBreakdown"
+import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd"
 
 setupGoober(React.createElement)
 
@@ -56,7 +57,16 @@ const SectionTitle = styled('div')`
   margin-right: 28px;
 `
 
-const ProductDosesContainer = styled('div')`
+const ProductDosesContainer = styled('div', React.forwardRef)`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  white-space: pre;
+  overflow: scroll;
+  padding-bottom: 12px;
+`
+
+const productDosesClassName = css`
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -76,6 +86,14 @@ function useFetchDatabase() {
   return [fetching]
 }
 
+function reordered(list: Array<any>, startIndex: number, endIndex: number) {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return result;
+}
+
 const DEFAULT_SECTION_TITLE = '_default'
 const DEFAULT_SECTIONS = { [DEFAULT_SECTION_TITLE]: [atheticGreensOneServing] }
 
@@ -92,7 +110,7 @@ function App() {
   const [selectedSections, setSelectedSections] = useStorage('selectedSections', [DEFAULT_SECTION_TITLE])
   const [collapsedSections, setCollapsedSections] = useStorage('collapsedSections', [])
   const [isShowingCart, setIsShowingCart] = useState(false)
-  const sectionNames = Object.keys(sections)
+  const [sectionNames, setSectionNames] = useStorage('sectionNames', Object.keys(sections))
 
   const onCartClick = () => setIsShowingCart(!isShowingCart)
 
@@ -117,6 +135,7 @@ function App() {
     if (!name) return
     setSections({ ...sections, [name]: productDose, [DEFAULT_SECTION_TITLE]: [] })
     setSelectedSections([ ...selectedSections, name ])
+    setSectionNames([...sectionNames, name])
   }
 
   const onProductDoseCheckChange = (name: string, value: boolean) => {
@@ -176,8 +195,6 @@ function App() {
       || product.nutrientsPerServing?.find(n => n.nutrient === nutrient) !== undefined
   }
 
-
-
   function getSortedProductDoses(nutrient: Nutrient | undefined) {
     if (!nutrient) return null
     const doses = selectedSections
@@ -204,11 +221,27 @@ function App() {
     setSelectedSuppliedNutrient(nutrient)
   }
 
+  function sectionExists(name: string) {
+    return sections[name] !== undefined
+  }
+
+  function onDragEnd(result: DropResult) {
+    if (!result.destination) {
+      return
+    }
+    const newSectionNames = reordered(
+      sectionNames,
+      result.source.index,
+      result.destination!.index
+    )
+    setSectionNames(newSectionNames)
+  }
+
   const productsFound = searchPhrase ? productsDatabase.getFood(searchPhrase as any as string) : undefined
   const topNutrientProducts = selectedNutrient ? productsDatabase.getFoodsWithMost(selectedNutrient, 200) : DEFAULT_SEARCH_LIST
   const displayProducts = productsFound ? productsFound : topNutrientProducts
 
-  const allSectionsProductDoses = sectionNames.map(name => selectedSections.includes(name) ? sections[name] : null).filter(Boolean).flatMap(f => f) as ProductDose[]
+  const allSectionsProductDoses = sectionNames.map((name: string) => selectedSections.includes(name) ? sections[name] : null).filter(Boolean).flatMap((f: any) => f) as ProductDose[]
   const allProductNutrientDoses = addNutrientDoses(allSectionsProductDoses.flatMap(getNutrientDosesFromProductDose))
   const missing = getNutrientsMissing(nutrientsMan32, allProductNutrientDoses)
   return (
@@ -231,26 +264,40 @@ function App() {
             <EmojiButton onClick={onDownloadClick}>⬇️</EmojiButton>
             <EmojiButton onClick={onCartClick}>🛒</EmojiButton>
           </SectionTitle>
-          <ProductDosesContainer>
-            {sectionNames ? sectionNames.map(s => 
-              <ProductDosesList
-                key={s}
-                name={s}
-                isSelected={s === selectedSection}
-                isCollapsed={collapsedSections.includes(s)}
-                isDefault={s === DEFAULT_SECTION_TITLE}
-                checked={selectedSections.includes(s)}
-                productDoses={sections[s]}
-                onClick={() => setSelectedSection(s)}
-                onRemoveProductDoseClick={onRemoveProductDoseClick}
-                onCollapse={onSectionCollapseClick(s)}
-                onSave={onProductDosesSectionSave}
-                onCheckChange={onProductDoseCheckChange}
-                onProductDoseClick={onProductDoseClick}
-                onRemoveClick={onProductDoseListRemoveClick(s)}
-                onProductDoseValueChange={onProductDoseValueChange(s)}
-              />) : null}
-            </ProductDosesContainer>
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="sectionsList" key="sectionList">
+              {(provided, snapshot) => (
+                <ProductDosesContainer ref={provided.innerRef} {...provided.droppableProps}>
+                  {sectionNames ? sectionNames.filter(sectionExists).map((s: string, index: number) => 
+                    (<Draggable key={s} draggableId={s} index={index}>
+                      {(provided, snapshot) => (
+                        <ProductDosesList
+                          innerRef={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          name={s}
+                          isSelected={s === selectedSection}
+                          isCollapsed={collapsedSections.includes(s)}
+                          isDefault={s === DEFAULT_SECTION_TITLE}
+                          checked={selectedSections.includes(s)}
+                          productDoses={sections[s]}
+                          onClick={() => setSelectedSection(s)}
+                          onRemoveProductDoseClick={onRemoveProductDoseClick}
+                          onCollapse={onSectionCollapseClick(s)}
+                          onSave={onProductDosesSectionSave}
+                          onCheckChange={onProductDoseCheckChange}
+                          onProductDoseClick={onProductDoseClick}
+                          onRemoveClick={onProductDoseListRemoveClick(s)}
+                          onProductDoseValueChange={onProductDoseValueChange(s)}
+                        />
+                      )}
+                    </Draggable>)
+                  ) : null}
+                  {provided.placeholder}
+                </ProductDosesContainer>
+              )}
+            </Droppable>
+          </DragDropContext>
         </Column>
       </Row>
       <Row style={{flex: 0.7}}>
