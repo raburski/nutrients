@@ -29,7 +29,6 @@ const AppContainer = styled('div')`
   display: flex;
   flex-directio: row;
   flex: 1;
-  
 `
 
 const Column = styled('div')`
@@ -58,15 +57,6 @@ const SectionTitle = styled('div')`
 `
 
 const ProductDosesContainer = styled('div', React.forwardRef)`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  white-space: pre;
-  overflow: scroll;
-  padding-bottom: 12px;
-`
-
-const productDosesClassName = css`
   display: flex;
   flex-direction: column;
   flex: 1;
