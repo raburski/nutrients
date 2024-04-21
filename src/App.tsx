@@ -220,7 +220,7 @@ function App() {
       return
     }
     const newSectionNames = reordered(
-      sectionNames,
+      sectionNames.filter((name: string) => Object.keys(sections).includes(name)),
       result.source.index,
       result.destination!.index
     )
@@ -259,7 +259,7 @@ function App() {
               {(provided, snapshot) => (
                 <ProductDosesContainer ref={provided.innerRef} {...provided.droppableProps}>
                   {sectionNames ? sectionNames.filter(sectionExists).map((s: string, index: number) => 
-                    (<Draggable key={s} draggableId={s} index={index}>
+                    (<Draggable key={s} draggableId={s} isDragDisabled={s === '_default'} index={index}>
                       {(provided, snapshot) => (
                         <ProductDosesList
                           innerRef={provided.innerRef}

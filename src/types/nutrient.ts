@@ -95,4 +95,5 @@ export const nutrientsToxicity = {
     [Micronutrient.Iodine]: { value: 1000, unit: NutrientUnit.MCG },
     [Micronutrient.Iron]: { value: 40, unit: NutrientUnit.MG },
     [Micronutrient.Sodium]: { value: 2500, unit: NutrientUnit.MG },
+    [Micronutrient.Selenium]: { value: 300, unit: NutrientUnit.MCG },
 }

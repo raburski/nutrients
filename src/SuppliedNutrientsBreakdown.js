@@ -30,7 +30,7 @@ export default function SuppliedNutrientsBreakdown({ doses, nutrient }) {
                 const nutrientAmount = getProductDoseNutrientAmount(d, nutrient)
                 return (
                     <Row>
-                        <Size>{d.grams ? `${d.grams}g ` : `${d.servings} serv`}</Size>
+                        <Size>{d.servings ? `${d.servings} serv` : `${d.grams}g ` }</Size>
                         {d.product.name}
                         <Size/>
                         <Spacer/>

@@ -9,6 +9,17 @@ import vilgainOatmeal from './vilgain/oatmeal'
 import vilgainProteinBar from './vilgain/proteinBar'
 import orangeProduct from "./orange"
 import vilgainCannedTuna from './vilgain/tuna'
+import vilgainCollagen from './vilgain/collagen'
+import biedronkaPudding from './biedronka/pudding'
+import biedronkaSerek from './biedronka/serek'
+import goOnBar from './biedronka/goOnProteinBar'
+import goActivePeanutBar from './biedronka/goActivePeanutBar'
+import goActiveCoconutBar from './biedronka/goActiveCoconutBar'
+import goActiveProteinDrink from './biedronka/goActiveProteinDrink'
+import mullermilchProtein from './other/mullermilchProtein'
+import studentska from './other/studentska'
+import snickersBar from './other/snickers'
+import wedelMleczna from './other/wedelMleczna'
 
 export { atheticGreensOneServing, athelticGreensDoses } from './ag1'
 
@@ -23,5 +34,16 @@ export const allProducts = [
     vilgainOatmeal,
     vilgainProteinBar,
     vilgainCannedTuna,
+    vilgainCollagen,
     orangeProduct,
+    biedronkaPudding,
+    biedronkaSerek,
+    goOnBar,
+    goActivePeanutBar,
+    goActiveCoconutBar,
+    goActiveProteinDrink,
+    mullermilchProtein,
+    studentska,
+    snickersBar,
+    wedelMleczna
 ]
