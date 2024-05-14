@@ -2,7 +2,7 @@ import { styled } from "goober";
 import React, { useEffect, useState } from "react";
 import useDebouncedInput from "./useDebouncedInput";
 import EmojiButton from "./EmojiButton";
-import { addNutrientDoses, getNutrientDosesFromProductDose } from "./nutrients";
+import { addNutrientDoses, calcCalorieDoes, getNutrientDosesFromProductDose } from "./nutrients";
 
 const Container = styled('div', React.forwardRef)`
     display: flex;
@@ -134,7 +134,8 @@ export default function ProductDosesList({ innerRef, isDefault, isSelected, isCo
     const carbs = allProductNutrientDoses.find(d => d.nutrient === 'Carbohydrate')
     const fat = allProductNutrientDoses.find(d => d.nutrient === 'Fat')
     const protein = allProductNutrientDoses.find(d => d.nutrient === 'Protein')
-    const macroString = carbs ? `C: ${carbs ? Math.round(carbs.amount.value) : 0}, P: ${protein ? Math.round(protein.amount.value) : 0}, F: ${fat ? Math.round(fat.amount.value) : 0}` : null
+    const calorieDose = calcCalorieDoes(allProductNutrientDoses)
+    const macroString = carbs ? `C: ${carbs ? Math.round(carbs.amount.value) : 0}, P: ${protein ? Math.round(protein.amount.value) : 0}, F: ${fat ? Math.round(fat.amount.value) : 0}, ${calorieDose?.amount?.value} calories` : null
 
     return (
         <Container isSelected={isSelected} ref={innerRef} onClick={onContainerClick} {...props}>

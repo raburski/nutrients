@@ -1,6 +1,6 @@
 import { styled } from "goober";
 import { NutrientAmount, NutrientDose, NutrientUnit, allNutrients, nutrientsToxicity, waterSoluableNutrients } from "./types/nutrient";
-import { subAmounts } from "./nutrients";
+import { calcCalorieDoes, subAmounts } from "./nutrients";
 import { allDosesNutrients } from "./types/doses";
 
 const Container = styled('div')`
@@ -57,20 +57,6 @@ function NutrientRow({ onClick, nutrient, showName, nutrientDose = {}, optimalNu
 }
 
 const CALORIE_NUTRIENT = 'Calories'
-
-function calcCalorieDoes(doses) {
-    const carbs = doses.find(dose => dose.nutrient === 'Carbohydrate')
-    const protein = doses.find(dose => dose.nutrient === 'Protein')
-    const fat = doses.find(dose => dose.nutrient === 'Fat')
-    if (!carbs || !protein || !fat) return null
-    return {
-        nutrient: 'Calories',
-        amount: {
-            value: carbs.amount.value * 4 + protein.amount.value * 4 + fat.amount.value * 9,
-            unit: 'calories',
-        }
-    }
-}
 
 export default function NutrientList({ onNutrientClick, nutrientDoses = [], optimalNutrientDoses = [], showNames = false, onlyProvided = false }) {
     const nutrients = onlyProvided ? allNutrients.filter(nutrient => nutrientDoses.filter(dose => dose.nutrient === nutrient).length > 0) : allDosesNutrients

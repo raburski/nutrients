@@ -111,3 +111,20 @@ export function getProductDoseNutrientAmount(dose: ProductDose, nutrient: Nutrie
   }
   return undefined
 }
+
+export function calcCalorieDoes(doses: NutrientDose[]) {
+  const carbs = doses.find(dose => dose.nutrient === 'Carbohydrate')
+  const protein = doses.find(dose => dose.nutrient === 'Protein')
+  const fat = doses.find(dose => dose.nutrient === 'Fat')
+
+  const carbsValue = carbs?.amount?.value || 0
+  const proteinValue = protein?.amount?.value || 0
+  const fatValue = fat?.amount?.value || 0
+  return {
+      nutrient: 'Calories',
+      amount: {
+          value: Math.round(carbsValue * 4 + proteinValue * 4 + fatValue * 9),
+          unit: 'calories',
+      }
+  }
+}
