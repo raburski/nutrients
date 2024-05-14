@@ -15,6 +15,9 @@ const UNIT_CONVERSION_MATRIX: any = {
   },
   [NutrientUnit.MG_NE]: {
     [NutrientUnit.MG]: 1,
+  },
+  [NutrientUnit.MCG_DFE]: {
+    [NutrientUnit.MCG]: 1
   }
 }
 

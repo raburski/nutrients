@@ -22,6 +22,38 @@ export const micronutrientsMan32: NutrientDose[] = [
       amount: { value: 1300, unit: NutrientUnit.MCG_RAE },
     },
     {
+      nutrient: Micronutrient.VitaminB1, // Bryan 2.8
+      amount: { value: 2, unit: NutrientUnit.MG },
+    },
+    {
+      nutrient: Micronutrient.VitaminB2, // Brayn 2.0
+      amount: { value: 2, unit: NutrientUnit.MG },
+    },
+    {
+      nutrient: Micronutrient.VitaminB3, // 2.8
+      amount: { value: 16, unit: NutrientUnit.MG_NE },
+    },
+    {
+      nutrient: Micronutrient.VitaminB5,
+      amount: { value: 5, unit: NutrientUnit.MG },
+    },
+    {
+      nutrient: Micronutrient.VitaminB6, // 3.5
+      amount: { value: 3, unit: NutrientUnit.MG },
+    },
+    {
+      nutrient: Micronutrient.VitaminB7, // 42
+      amount: { value: 42, unit: NutrientUnit.MCG },
+    },
+    {
+      nutrient: Micronutrient.VitaminB9,
+      amount: { value: 400, unit: NutrientUnit.MCG_DFE },
+    },
+    {
+      nutrient: Micronutrient.VitaminB12,
+      amount: { value: 2.4, unit: NutrientUnit.MCG },
+    },
+    {
       nutrient: Micronutrient.VitaminC, // 950
       amount: { value: 950, unit: NutrientUnit.MG },
     },
@@ -36,38 +68,6 @@ export const micronutrientsMan32: NutrientDose[] = [
     {
       nutrient: Micronutrient.VitaminK, // 580
       amount: { value: 400, unit: NutrientUnit.MCG },
-    },
-    {
-      nutrient: Micronutrient.VitaminB1, // Bryan 2.8
-      amount: { value: 2, unit: NutrientUnit.MG },
-    },
-    {
-      nutrient: Micronutrient.VitaminB2, // Brayn 2.0
-      amount: { value: 2, unit: NutrientUnit.MG },
-    },
-    {
-      nutrient: Micronutrient.VitaminB3, // 2.8
-      amount: { value: 16, unit: NutrientUnit.MG_NE },
-    },
-    {
-      nutrient: Micronutrient.VitaminB6, // 3.5
-      amount: { value: 3, unit: NutrientUnit.MG },
-    },
-    {
-      nutrient: Micronutrient.VitaminB9,
-      amount: { value: 400, unit: NutrientUnit.MCG_DFE },
-    },
-    {
-      nutrient: Micronutrient.VitaminB12,
-      amount: { value: 2.4, unit: NutrientUnit.MCG },
-    },
-    {
-      nutrient: Micronutrient.VitaminB7, // 42
-      amount: { value: 42, unit: NutrientUnit.MCG },
-    },
-    {
-      nutrient: Micronutrient.VitaminB5,
-      amount: { value: 5, unit: NutrientUnit.MG },
     },
     {
       nutrient: Micronutrient.Calcium, // 2500
@@ -93,10 +93,7 @@ export const micronutrientsMan32: NutrientDose[] = [
       nutrient: Micronutrient.Sodium,
       amount: { value: 2000, unit: NutrientUnit.MG },
     },
-    {
-      nutrient: Micronutrient.Zinc,
-      amount: { value: 11, unit: NutrientUnit.MG },
-    },
+    
     {
       nutrient: Micronutrient.Copper,
       amount: { value: 900, unit: NutrientUnit.MCG },
@@ -105,25 +102,29 @@ export const micronutrientsMan32: NutrientDose[] = [
         nutrient: Micronutrient.Selenium,
         amount: { value: 55, unit: NutrientUnit.MCG },
     },
-    {
-        nutrient: Micronutrient.Chromium,
-        amount: { value: 35, unit: NutrientUnit.MCG },
-    },
+    // {
+    //     nutrient: Micronutrient.Chromium,
+    //     amount: { value: 35, unit: NutrientUnit.MCG },
+    // },
     {
         nutrient: Micronutrient.Manganese,
         amount: { value: 2.3, unit: NutrientUnit.MG },
     },
-    {
-        nutrient: Micronutrient.Molybdenum,
-        amount: { value: 45, unit: NutrientUnit.MCG },
-    },
+    // {
+    //     nutrient: Micronutrient.Molybdenum,
+    //     amount: { value: 45, unit: NutrientUnit.MCG },
+    // },
     {
         nutrient: Micronutrient.Iodine,
         amount: { value: 150, unit: NutrientUnit.MCG },
     },
+    // {
+    //   nutrient: Micronutrient.Fluoride,
+    //   amount: { value: 4, unit: NutrientUnit.MG },
+    // },
     {
-      nutrient: Micronutrient.Fluoride,
-      amount: { value: 4, unit: NutrientUnit.MG },
+      nutrient: Micronutrient.Zinc,
+      amount: { value: 11, unit: NutrientUnit.MG },
     },
     {
       nutrient: Micronutrient.Fiber,
@@ -132,3 +133,4 @@ export const micronutrientsMan32: NutrientDose[] = [
 ]
 
 export const nutrientsMan32 = [...macronutrientsMan32, ...micronutrientsMan32]
+export const allDosesNutrients = [...macronutrientsMan32.map(n => n.nutrient), ...micronutrientsMan32.map(n => n.nutrient)]

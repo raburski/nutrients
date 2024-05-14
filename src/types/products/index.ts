@@ -20,6 +20,10 @@ import mullermilchProtein from './other/mullermilchProtein'
 import studentska from './other/studentska'
 import snickersBar from './other/snickers'
 import wedelMleczna from './other/wedelMleczna'
+import blueprintEssentialGel from './blueprint/essentialGel'
+import blueprintEssentialCapsules from './blueprint/essentialCapsules'
+import blueprintLongevityMix from './blueprint/longevityMix'
+
 
 export { atheticGreensOneServing, athelticGreensDoses } from './ag1'
 
@@ -45,5 +49,8 @@ export const allProducts = [
     mullermilchProtein,
     studentska,
     snickersBar,
-    wedelMleczna
+    wedelMleczna,
+    blueprintEssentialGel,
+    blueprintEssentialCapsules,
+    blueprintLongevityMix
 ]

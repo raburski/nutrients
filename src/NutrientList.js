@@ -1,6 +1,7 @@
 import { styled } from "goober";
 import { NutrientAmount, NutrientDose, NutrientUnit, allNutrients, nutrientsToxicity, waterSoluableNutrients } from "./types/nutrient";
 import { subAmounts } from "./nutrients";
+import { allDosesNutrients } from "./types/doses";
 
 const Container = styled('div')`
     display: flex;
@@ -72,7 +73,7 @@ function calcCalorieDoes(doses) {
 }
 
 export default function NutrientList({ onNutrientClick, nutrientDoses = [], optimalNutrientDoses = [], showNames = false, onlyProvided = false }) {
-    const nutrients = onlyProvided ? allNutrients.filter(nutrient => nutrientDoses.filter(dose => dose.nutrient === nutrient).length > 0) : allNutrients
+    const nutrients = onlyProvided ? allNutrients.filter(nutrient => nutrientDoses.filter(dose => dose.nutrient === nutrient).length > 0) : allDosesNutrients
     const calorieDose = calcCalorieDoes(nutrientDoses)
     function shouldSeparate(nutrient) {
         return nutrient === 'Fat' || nutrient === 'Zinc'
