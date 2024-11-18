@@ -6,7 +6,7 @@ export enum Micronutrient {
     VitaminB5 = 'Pantothenic Acid (Vitamin B5)',
     VitaminB6 = 'Vitamin B6',
     VitaminB7 = 'Biotin (Vitamin B7)',
-    VitaminB9 = 'Folate (Vitamin B9)',
+    VitaminB9 = 'Folate / Folic Acid (Vitamin B9)',
     VitaminB12 = 'Vitamin B12',
     VitaminC = 'Vitamin C',
     VitaminD = 'Vitamin D',

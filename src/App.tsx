@@ -234,6 +234,7 @@ function App() {
   const allSectionsProductDoses = sectionNames.map((name: string) => selectedSections.includes(name) ? sections[name] : null).filter(Boolean).flatMap((f: any) => f) as ProductDose[]
   const allProductNutrientDoses = addNutrientDoses(allSectionsProductDoses.flatMap(getNutrientDosesFromProductDose))
   const missing = getNutrientsMissing(nutrientsMan32, allProductNutrientDoses)
+
   return (
     <AppContainer>
       <Row>
@@ -313,7 +314,7 @@ function App() {
          {selectedProduct ? <ProductInfo product={selectedProduct}/> : null}
       </Modal>
       <Modal isOpen={isShowingCart} onClickAway={onCartClick}>
-          <Cart sections={sections}/>
+          <Cart productDoses={allSectionsProductDoses}/>
       </Modal>
       <Modal isOpen={selectedSuppliedNutrient} onClickAway={() => setSelectedSuppliedNutrient(undefined)}>
           <SuppliedNutrientsBreakdown nutrient={selectedSuppliedNutrient} doses={getSortedProductDoses(selectedSuppliedNutrient)}/>

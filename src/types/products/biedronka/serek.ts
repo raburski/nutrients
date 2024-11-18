@@ -4,7 +4,7 @@ const nutrients: NutrientDose[] = [
     { nutrient: Macronutrient.Fat, amount: { value: 0.2, unit: NutrientUnit.G } },
     { nutrient: Macronutrient.Protein, amount: { value: 12, unit: NutrientUnit.G } },
     { nutrient: Macronutrient.Carbohydrate, amount: { value: 4.5, unit: NutrientUnit.G } },
-    { nutrient: Micronutrient.Sodium, amount: { value: 0.1, unit: NutrientUnit.G } },
+    { nutrient: Micronutrient.Sodium, amount: { value: 40, unit: NutrientUnit.MG } },
 ]
 
 export const product: Product = {

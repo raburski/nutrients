@@ -4,15 +4,15 @@ import { Macronutrient, Micronutrient, NutrientDose, NutrientUnit } from "./nutr
 export const macronutrientsMan32: NutrientDose[] = [
   {
     nutrient: Macronutrient.Carbohydrate,
-    amount: { value: 190, unit: NutrientUnit.G },
+    amount: { value: 220, unit: NutrientUnit.G },
   },
   {
     nutrient: Macronutrient.Protein,
-    amount: { value: 190, unit: NutrientUnit.G },
+    amount: { value: 232, unit: NutrientUnit.G },
   },
   {
     nutrient: Macronutrient.Fat,
-    amount: { value: 115, unit: NutrientUnit.G },
+    amount: { value: 130, unit: NutrientUnit.G },
   },
 ]
 
@@ -128,7 +128,7 @@ export const micronutrientsMan32: NutrientDose[] = [
     },
     {
       nutrient: Micronutrient.Fiber,
-      amount: { value: 38, unit: NutrientUnit.G },
+      amount: { value: 32, unit: NutrientUnit.G },
     }
 ]
 

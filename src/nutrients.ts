@@ -7,6 +7,7 @@ const UNIT_CONVERSION_MATRIX: any = {
   [NutrientUnit.MCG]: {
     [NutrientUnit.MG]: 0.001,
     [NutrientUnit.MCG_DFE]: 1,
+    [NutrientUnit.MCG_RAE]: 1,
   },
   [NutrientUnit.MG]: {
     [NutrientUnit.MCG]: 1000,
@@ -17,6 +18,9 @@ const UNIT_CONVERSION_MATRIX: any = {
     [NutrientUnit.MG]: 1,
   },
   [NutrientUnit.MCG_DFE]: {
+    [NutrientUnit.MCG]: 1
+  },
+  [NutrientUnit.MCG_RAE]: {
     [NutrientUnit.MCG]: 1
   }
 }

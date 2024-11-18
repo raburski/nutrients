@@ -25,9 +25,8 @@ const ProductRow = styled('div')`
     }
 `
 
-export default function Cart({ sections }) {
-    const productDoses = Object.values(sections).flat()
-    const products = productDoses.map(pd => pd.product)
+export default function Cart({ productDoses }) {
+    const products = productDoses.filter(p => (p.grams > 0 || p.servings > 0)).map(pd => pd.product)
     const filteredProducts = products.filter((p, index) => {
         const firstIndex = products.findIndex(p_ => p_.id === p.id)
         return firstIndex === index

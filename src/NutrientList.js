@@ -1,5 +1,5 @@
 import { styled } from "goober";
-import { NutrientAmount, NutrientDose, NutrientUnit, allNutrients, nutrientsToxicity, waterSoluableNutrients } from "./types/nutrient";
+import { Micronutrient, NutrientAmount, NutrientDose, NutrientUnit, allNutrients, nutrientsToxicity, waterSoluableNutrients } from "./types/nutrient";
 import { calcCalorieDoes, subAmounts } from "./nutrients";
 import { allDosesNutrients } from "./types/doses";
 
@@ -36,18 +36,20 @@ const RowValue = styled('div')`
 `
 
 function NutrientRow({ onClick, nutrient, showName, nutrientDose = {}, optimalNutrientDose = {}, separated = false }) {
-    const isCovered = nutrientDose.amount && nutrientDose.amount.value < 0
+    const isCovered = nutrientDose.amount && optimalNutrientDose.amount && nutrientDose.amount.value < optimalNutrientDose.amount.value * 0.1
     const isTooHigh = nutrientDose.amount && optimalNutrientDose.amount && (-1 * nutrientDose.amount.value > optimalNutrientDose.amount.value * 1.2)
     const isTooLow = nutrientDose.amount && optimalNutrientDose.amount && nutrientDose.amount.value !== optimalNutrientDose.amount.value && (nutrientDose.amount.value > optimalNutrientDose.amount.value * 0.3)
     const isToxic = nutrientDose.amount && nutrientsToxicity[nutrient] && subAmounts(nutrientDose.amount, nutrientsToxicity[nutrient]).value >= 0 
     const value = nutrientDose?.amount ? Math.round(nutrientDose?.amount?.value * 100)/100 : undefined
     const tooHighIcon = waterSoluableNutrients.includes(nutrient) ? '💧' : '⬆️'
+
+    const notEnoughDataIcon = nutrient === Micronutrient.Manganese ? '✳️' : null
     return (
         <Row separated={separated} onClick={onClick}>
             <RowTitle>
                 {isCovered ? '✅ ' : null}
                 {isTooHigh ? `${tooHighIcon} ` : null}
-                {isTooLow ? '🟡 ' : null}
+                {isTooLow ? (notEnoughDataIcon || '🟡 ') : null}
                 {isToxic ? '🆘 TOXIC 🆘 ' : null}
                 {showName ? nutrient : ''}
             </RowTitle> 

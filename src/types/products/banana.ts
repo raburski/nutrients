@@ -8,6 +8,7 @@ const bananaNutrients: NutrientDose[] = [
     { nutrient: Micronutrient.Potassium, amount: { value: 358, unit: NutrientUnit.MG } },
     { nutrient: Micronutrient.Magnesium, amount: { value: 27, unit: NutrientUnit.MG } },
     { nutrient: Micronutrient.VitaminB6, amount: { value: 0.4, unit: NutrientUnit.MG } },
+    { nutrient: Micronutrient.Fiber, amount: { value: 2.6, unit: NutrientUnit.G } },
 ]
 
 export const bananaProduct: Product = {

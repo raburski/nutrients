@@ -25,7 +25,13 @@ import blueprintEssentialCapsules from './blueprint/essentialCapsules'
 import blueprintLongevityMix from './blueprint/longevityMix'
 import porkLoin from './meat/porkLoin'
 import biedronkaGoActiveGranolaBar from './biedronka/goActiveGranolaBar'
-
+import biedronkaSkyrJagoda from './biedronka/fruvitaSkyrJagoda'
+import piatnicaSmietana18 from './biedronka/piatnicaSmietana18'
+import mieloneWolowe from './biedronka/mieloneWolowe'
+import vitC from './blueprint/vitC'
+import vilgainMultivitaminCmplex from './vilgain/multivitaminComplex'
+import huelGreens from './huel/greens'
+import huelBlack from './huel/black'
 
 export { atheticGreensOneServing, athelticGreensDoses } from './ag1'
 
@@ -56,5 +62,12 @@ export const allProducts = [
     blueprintEssentialCapsules,
     blueprintLongevityMix,
     porkLoin,
-    biedronkaGoActiveGranolaBar
+    biedronkaGoActiveGranolaBar,
+    biedronkaSkyrJagoda,
+    // piatnicaSmietana18,
+    mieloneWolowe,
+    vitC,
+    vilgainMultivitaminCmplex,
+    huelGreens,
+    huelBlack
 ]
