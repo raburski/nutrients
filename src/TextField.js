@@ -1,10 +1,11 @@
 import { styled } from 'goober'
 
-const Input = styled('input')`
+export const FieldInput = styled('input')`
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     align-self: flex-start;
+    box-sizing: border-box;
 
     border: 1px solid #909090;
     border-radius: .5rem;
@@ -28,6 +29,15 @@ const Input = styled('input')`
     }
 `
 
+const NumberInput = styled(FieldInput)`
+    width: 72px;
+    text-align: right;
+`
+
 export default function TextField({ ...props }) {
-    return <Input type="text" {...props} />
+    return <FieldInput type="text" {...props} />
+}
+
+export function NumberField({ ...props }) {
+    return <NumberInput type="number" min="0" step="any" {...props} />
 }

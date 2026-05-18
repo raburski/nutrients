@@ -25,7 +25,10 @@
     "start": "BROWSER=None react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "scrape:paleo-robbie": "node scripts/paleo-robbie/scrape.mjs",
+    "build:paleo-robbie": "node scripts/paleo-robbie/build.mjs",
+    "paleo-robbie": "node scripts/paleo-robbie/scrape.mjs && node scripts/paleo-robbie/build.mjs"
   },
   "eslintConfig": {
     "extends": [

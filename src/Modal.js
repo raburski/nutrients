@@ -23,11 +23,10 @@ const ModalWindow = styled(motion.div)`
     max-width: 90%;
     max-height: 90%;
     background-color: white;
-    border-radius: 6px;
-    overflow-y: scroll;
+    border-radius: 12px;
+    overflow-y: auto;
     overflow-x: hidden;
-    box-shadow: 0px 2px 10px #303030;
-    padding: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
 `
 
 function onWindowClick(e) {

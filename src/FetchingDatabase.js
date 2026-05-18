@@ -1,28 +1,32 @@
 import { styled } from "goober"
 import Modal from "./Modal"
+import Button from "./Button"
+import { ModalContent, ModalTitle, ModalSubtitle, ModalActions } from "./modalContent"
 
-const Container = styled('div')`
-    display: flex;
-    flex-direction: column;
-    padding: 24px;
-    justify-content: center;
+const Progress = styled('div')`
+	font-size: 13px;
+	line-height: 1.5;
+	color: ${props => props.$failed ? "#c62828" : "#404040"};
+	margin-top: 8px;
 `
 
-const Title = styled('div')`
-    font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 22px;
-`
-
-export default function FetchingDatabase() {
-    return (
-        <Modal isOpen>
-            <Container>
-                <Title>Fetching database...</Title>
-                This may take a while since it is almost 100mb.<br />
-                It will be stored in your browser.<br />
-                It won't have to be loaded again next time!
-            </Container>
-        </Modal>
-    )
+export default function FetchingDatabase({ message, failed, onDismiss }) {
+	return (
+		<Modal isOpen onClickAway={failed ? onDismiss : () => {}}>
+			<ModalContent>
+				<ModalTitle>{failed ? "Could not load databases" : "Loading product databases"}</ModalTitle>
+				<ModalSubtitle>
+					{failed
+						? "Fix the issue below, then try Save & sync again."
+						: "Large files are downloaded once and stored in IndexedDB in your browser."}
+				</ModalSubtitle>
+				{message ? <Progress $failed={failed}>{message}</Progress> : null}
+				{failed ? (
+					<ModalActions align="start">
+						<Button type="button" variant="primary" onClick={onDismiss}>Close</Button>
+					</ModalActions>
+				) : null}
+			</ModalContent>
+		</Modal>
+	)
 }

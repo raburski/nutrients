@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { setup as setupGoober, styled } from 'goober'
@@ -21,6 +21,10 @@ import EmojiButton from "./EmojiButton";
 import Cart from "./Cart";
 import Spacer from "./Spacer";
 import SuppliedNutrientsBreakdown from "./SuppliedNutrientsBreakdown"
+import AddProductForm from "./AddProductForm"
+import ProductSourcesModal from "./ProductSourcesModal"
+import { filterProductsByName, filterProductsByNutrient, isCustomProduct } from "./customProducts"
+import { DEFAULT_ENABLED_SOURCE_IDS, getProductSource } from "./productSources"
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd"
 
 setupGoober(React.createElement)
@@ -65,15 +69,64 @@ const ProductDosesContainer = styled('div', React.forwardRef)`
   padding-bottom: 12px;
 `
 
-function useFetchDatabase() {
-  const [fetching, setFetching] = useState(false)
-  useEffect(() => {
-    if (productsDatabase.isLoaded) return
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
 
-    setFetching(true)
-    productsDatabase.fetchDatabase().then(() => setFetching(false))
-  }, [])
-  return [fetching]
+function useProductDatabaseSync(enabledSourceIds: string[], syncKey: number) {
+  const [fetching, setFetching] = useState(false)
+  const [progress, setProgress] = useState("")
+  const [revision, setRevision] = useState(0)
+  const [syncFailed, setSyncFailed] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    const isUserSync = syncKey > 0
+    const startedAt = Date.now()
+
+    async function run() {
+      setFetching(true)
+      setSyncFailed(false)
+      setProgress("Preparing product databases…")
+
+      let failed = false
+      try {
+        await productsDatabase.syncSources(
+          enabledSourceIds,
+          message => {
+            if (!cancelled) setProgress(message)
+          },
+          { force: isUserSync }
+        )
+      } catch (error) {
+        failed = true
+        if (!cancelled) {
+          setSyncFailed(true)
+          setProgress(error instanceof Error ? error.message : "Failed to load product databases.")
+        }
+      }
+
+      if (!cancelled && isUserSync) {
+        const elapsed = Date.now() - startedAt
+        const minDisplayMs = failed ? 4000 : 600
+        if (elapsed < minDisplayMs) {
+          await sleep(minDisplayMs - elapsed)
+        }
+      }
+
+      if (!cancelled) {
+        setFetching(false)
+        if (!failed) {
+          setRevision(r => r + 1)
+        }
+      }
+    }
+
+    run()
+    return () => { cancelled = true }
+  }, [enabledSourceIds.join(","), syncKey])
+
+  return { fetching, progress, revision, syncFailed }
 }
 
 function reordered(list: Array<any>, startIndex: number, endIndex: number) {
@@ -92,7 +145,14 @@ const DEFAULT_SEARCH_LIST = allProducts
 function App() {
   const [selectedSection, setSelectedSection] = useState(DEFAULT_SECTION_TITLE)
   const [selectedSuppliedNutrient, setSelectedSuppliedNutrient] = useState<Nutrient>()
-  const [fetchingDatabase] = useFetchDatabase()
+  const [enabledProductSources, setEnabledProductSources] = useStorage('enabledProductSources', DEFAULT_ENABLED_SOURCE_IDS)
+  const [sourcesSyncKey, setSourcesSyncKey] = useState(0)
+  const [syncErrorDismissed, setSyncErrorDismissed] = useState(false)
+  const activeProductSources = useMemo(() => {
+    if (!Array.isArray(enabledProductSources)) return DEFAULT_ENABLED_SOURCE_IDS
+    return enabledProductSources.filter((id: string) => !!getProductSource(id))
+  }, [enabledProductSources])
+  const { fetching: fetchingDatabase, progress: fetchProgress, revision: databaseRevision, syncFailed } = useProductDatabaseSync(activeProductSources, sourcesSyncKey)
   const [searchPhrase, onSearchChange, setSearchPhrase] = useDebouncedInput()
   const [selectedNutrient, setSelectedNutrient] = useState()
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>()
@@ -100,6 +160,9 @@ function App() {
   const [selectedSections, setSelectedSections] = useStorage('selectedSections', [DEFAULT_SECTION_TITLE])
   const [collapsedSections, setCollapsedSections] = useStorage('collapsedSections', [])
   const [isShowingCart, setIsShowingCart] = useState(false)
+  const [isShowingAddProduct, setIsShowingAddProduct] = useState(false)
+  const [isShowingProductSources, setIsShowingProductSources] = useState(false)
+  const [customProducts, setCustomProducts] = useStorage('customProducts', [] as Product[])
   const [sectionNames, setSectionNames] = useStorage('sectionNames', Object.keys(sections))
 
   const onCartClick = () => setIsShowingCart(!isShowingCart)
@@ -146,8 +209,32 @@ function App() {
 
   const onProductDoseValueChange = (name: string) => (dose: ProductDose, newValue: any) => {
     const newSections = deepCopy(sections)
-    newSections[name][sections[name].indexOf(dose)].grams = parseFloat(newValue)
+    const index = sections[name].indexOf(dose)
+    const parsed = parseFloat(newValue)
+    if (dose.product.nutrientsPerServing) {
+      newSections[name][index].servings = parsed
+    } else {
+      newSections[name][index].grams = parsed
+    }
     setSections(newSections)
+  }
+
+  const onCustomProductSave = (product: Product) => {
+    setCustomProducts([...customProducts, product])
+    setIsShowingAddProduct(false)
+  }
+
+  const onCustomProductDelete = (product: Product) => {
+    if (!product.id || !isCustomProduct(product)) return
+    setCustomProducts(customProducts.filter((p: Product) => p.id !== product.id))
+    setSelectedProduct(undefined)
+  }
+
+  const onProductSourcesSave = (sourceIds: string[]) => {
+    setIsShowingProductSources(false)
+    setSyncErrorDismissed(false)
+    setEnabledProductSources(sourceIds)
+    setSourcesSyncKey(key => key + 1)
   }
 
   async function onUploadClick() {
@@ -227,9 +314,19 @@ function App() {
     setSectionNames(newSectionNames)
   }
 
-  const productsFound = searchPhrase ? productsDatabase.getFood(searchPhrase as any as string) : undefined
-  const topNutrientProducts = selectedNutrient ? productsDatabase.getFoodsWithMost(selectedNutrient, 200) : DEFAULT_SEARCH_LIST
-  const displayProducts = productsFound ? productsFound : topNutrientProducts
+  const customMatchingSearch = searchPhrase ? filterProductsByName(customProducts, searchPhrase as any as string) : []
+  const customMatchingNutrient = selectedNutrient ? filterProductsByNutrient(customProducts, selectedNutrient as Nutrient) : []
+  const productsFound = useMemo(() => {
+    if (!searchPhrase) return undefined
+    return productsDatabase.getFood(searchPhrase as any as string)
+  }, [searchPhrase, databaseRevision])
+  const topNutrientProducts = useMemo(() => {
+    if (!selectedNutrient) return DEFAULT_SEARCH_LIST
+    return productsDatabase.getFoodsWithMost(selectedNutrient as Nutrient, 200)
+  }, [selectedNutrient, databaseRevision])
+  const baseDisplayProducts = productsFound ? productsFound : topNutrientProducts
+  const customForList = searchPhrase ? customMatchingSearch : (selectedNutrient ? customMatchingNutrient : customProducts)
+  const displayProducts = [...customForList, ...(baseDisplayProducts || [])]
 
   const allSectionsProductDoses = sectionNames.map((name: string) => selectedSections.includes(name) ? sections[name] : null).filter(Boolean).flatMap((f: any) => f) as ProductDose[]
   const allProductNutrientDoses = addNutrientDoses(allSectionsProductDoses.flatMap(getNutrientDosesFromProductDose))
@@ -239,7 +336,12 @@ function App() {
     <AppContainer>
       <Row>
         <Column style={{marginRight: 22, marginLeft: 12, flex: 0, flexBasis: 400, maxWidth: 400}}>
-          <SectionTitle>SEARCH:</SectionTitle>
+          <SectionTitle>
+            SEARCH:
+            <Spacer />
+            <EmojiButton onClick={() => setIsShowingProductSources(true)} title="Product databases">🗄️</EmojiButton>
+            <EmojiButton onClick={() => setIsShowingAddProduct(true)} title="Add custom product">📝</EmojiButton>
+          </SectionTitle>
           <TextField onChange={onSearchChange} style={{alignSelf: 'stretch', marginBottom: 12}}/>
           <select onChange={onNutrientSelectChange}>
             <option value=""> - select nutrient - </option>
@@ -311,7 +413,18 @@ function App() {
         </Column>
       </Row>
       <Modal isOpen={!!selectedProduct} onClickAway={() => setSelectedProduct(undefined)}>
-         {selectedProduct ? <ProductInfo product={selectedProduct}/> : null}
+         {selectedProduct ? <ProductInfo product={selectedProduct} onDelete={isCustomProduct(selectedProduct) ? onCustomProductDelete : undefined}/> : null}
+      </Modal>
+      <Modal isOpen={isShowingAddProduct} onClickAway={() => setIsShowingAddProduct(false)}>
+        <AddProductForm onSave={onCustomProductSave} onCancel={() => setIsShowingAddProduct(false)} />
+      </Modal>
+      <Modal isOpen={isShowingProductSources} onClickAway={() => setIsShowingProductSources(false)}>
+        <ProductSourcesModal
+          enabledSourceIds={enabledProductSources}
+          cacheRevision={databaseRevision}
+          onSave={onProductSourcesSave}
+          onCancel={() => setIsShowingProductSources(false)}
+        />
       </Modal>
       <Modal isOpen={isShowingCart} onClickAway={onCartClick}>
           <Cart productDoses={allSectionsProductDoses}/>
@@ -319,7 +432,13 @@ function App() {
       <Modal isOpen={selectedSuppliedNutrient} onClickAway={() => setSelectedSuppliedNutrient(undefined)}>
           <SuppliedNutrientsBreakdown nutrient={selectedSuppliedNutrient} doses={getSortedProductDoses(selectedSuppliedNutrient)}/>
       </Modal>
-      {fetchingDatabase ? <FetchingDatabase /> : null}
+      {fetchingDatabase || (syncFailed && !syncErrorDismissed) ? (
+        <FetchingDatabase
+          message={fetchProgress}
+          failed={syncFailed}
+          onDismiss={() => setSyncErrorDismissed(true)}
+        />
+      ) : null}
     </AppContainer>
   );
 }

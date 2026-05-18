@@ -1,7 +1,8 @@
 import { styled } from "goober";
 import React, { useEffect, useState } from "react";
 import useDebouncedInput from "./useDebouncedInput";
-import EmojiButton from "./EmojiButton";
+import EmojiButton from "./EmojiButton"
+import Button from "./Button"
 import { addNutrientDoses, calcCalorieDoes, getNutrientDosesFromProductDose } from "./nutrients";
 
 const Container = styled('div', React.forwardRef)`
@@ -69,11 +70,6 @@ const RowValueInput = styled('input')`
     }
 `
 
-const Button = styled('button')`
-    font-size: 10px;
-    margin-left: 12px;
-`
-
 const Controls = styled('div')`
     display: flex;
     flex-direction: row;
@@ -110,7 +106,7 @@ function ProductDoseRow({ productDose, onRemoveClick, onClick, onValueChange }) 
         }
     }, [value])
     return (
-        <Row onClick={onClick}><RowTitle>{truncateString(productDose.product.name, 50)}</RowTitle> <RowValueInput type="text" defaultValue={initialValue} onFocus={cancelEvent} onClick={cancelEvent} onChange={onInputValueChange}/> {unit}{onRemoveClick ? <Button onClick={onRemoveClick}>✕</Button> : null }</Row>
+        <Row onClick={onClick}><RowTitle>{truncateString(productDose.product.name, 50)}</RowTitle> <RowValueInput type="text" defaultValue={initialValue} onFocus={cancelEvent} onClick={cancelEvent} onChange={onInputValueChange}/> {unit}{onRemoveClick ? <Button type="button" variant="ghost" size="small" onClick={onRemoveClick}>✕</Button> : null }</Row>
     )
 }
 
@@ -140,14 +136,14 @@ export default function ProductDosesList({ innerRef, isDefault, isSelected, isCo
     return (
         <Container isSelected={isSelected} ref={innerRef} onClick={onContainerClick} {...props}>
             <Controls>
-                {isDefault ? <><input type="text" value={saveName} onChange={onSaveChange} placeholder="Meal name"/><button onClick={onSaveClick}>save</button><Spread /></> : null}
+                {isDefault ? <><input type="text" value={saveName} onChange={onSaveChange} placeholder="Meal name"/><Button type="button" variant="primary" size="small" onClick={onSaveClick}>Save meal</Button><Spread /></> : null}
                 {!isDefault ? 
                     <>
                         <Title><input checked={checked} type="checkbox" onClick={onCheckboxClick}/> {name}</Title>
                         <Subtitle>{macroString}</Subtitle>
                         <Spread />
                         <EmojiButton onClick={onCollapseClick}>{isCollapsed ? '🔽' : '🔼'}</EmojiButton>
-                        <Button onClick={onRemoveClick}>✕</Button>
+                        <Button type="button" variant="ghost" size="small" onClick={onRemoveClick}>✕</Button>
                     </> : null}
             </Controls>
             {!isCollapsed && productDoses.map(productDose => 

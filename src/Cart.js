@@ -1,14 +1,6 @@
 import { styled } from "goober"
 import Spacer from "./Spacer"
-
-const Container = styled('div')`
-    padding: 12px;
-`
-
-const Title = styled('h2')`
-    margin-top: 0px;
-
-`
+import { ModalContent, ModalTitle, ModalBody } from "./modalContent"
 
 const ProductRow = styled('div')`
     display: flex;
@@ -37,9 +29,11 @@ export default function Cart({ productDoses }) {
     } : null
 
     return (
-        <Container>
-            <Title>All products</Title>
-            {filteredProducts.map(product => <ProductRow onClick={onProductClick(product)}>{product.name}<Spacer />{product.url ? '🔗' : ''}</ProductRow>)}
-        </Container>
+        <ModalContent>
+            <ModalTitle>All products</ModalTitle>
+            <ModalBody>
+            {filteredProducts.map(product => <ProductRow key={product.id || product.name} onClick={onProductClick(product)}>{product.name}<Spacer />{product.url ? '🔗' : ''}</ProductRow>)}
+            </ModalBody>
+        </ModalContent>
     )
 }

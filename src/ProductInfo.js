@@ -1,29 +1,20 @@
-import { styled } from "goober"
 import NutrientList from "./NutrientList"
+import Button from "./Button"
+import { ModalContent, ModalTitle, ModalSubtitle, ModalActions } from "./modalContent"
 
-const Container = styled('div')`
-    padding: 12px;
-`
-
-const Title = styled('h2')`
-    margin-top: 0px;
-    margin-bottom: 0px;
-`
-
-const Subtitle = styled('div')`
-    margin-top: 0px;
-    margin-bottom: 16px;
-    font-size: 12px;
-`
-
-export default function ProductInfo({ product }) {
-    const doses = product.nutrientsPer100g || product.nutrientsPerServing
-    const per = product.nutrientsPer100g ? 'per 100g' : 'per serving'
-    return (
-        <Container>
-            <Title>{product.name}</Title>
-            <Subtitle>{per}</Subtitle>
-            <NutrientList showNames onlyProvided nutrientDoses={doses} />
-        </Container>
-    )
+export default function ProductInfo({ product, onDelete }) {
+	const doses = product.nutrientsPer100g || product.nutrientsPerServing
+	const per = product.nutrientsPer100g ? 'per 100g' : 'per serving'
+	return (
+		<ModalContent>
+			<ModalTitle>{product.name}</ModalTitle>
+			<ModalSubtitle>{per}</ModalSubtitle>
+			<NutrientList showNames onlyProvided nutrientDoses={doses} />
+			{onDelete ? (
+				<ModalActions align="start">
+					<Button variant="danger" onClick={() => onDelete(product)}>Delete custom product</Button>
+				</ModalActions>
+			) : null}
+		</ModalContent>
+	)
 }

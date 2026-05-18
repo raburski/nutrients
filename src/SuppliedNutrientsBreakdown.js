@@ -1,20 +1,12 @@
 import { styled } from "goober"
 import { getProductDoseNutrientAmount } from "./nutrients"
 import Spacer from "./Spacer"
-
-const Container = styled('div')`
-    padding: 12px;
-`
-
-const Title = styled('h2')`
-    margin-top: 0px;
-    margin-bottom: 14px;
-`
+import { ModalContent, ModalTitle, ModalBody } from "./modalContent"
 
 const Row = styled('div')`
     display: flex;
     flex-direction: row;
-    border-bottom: ${props => props.separated ? '2px' : '1px'} solid black;
+    border-bottom: 1px solid black;
     padding: 4px;
 `
 
@@ -24,12 +16,13 @@ const Size = styled('div')`
 
 export default function SuppliedNutrientsBreakdown({ doses, nutrient }) {
     return (
-        <Container>
-            <Title>{nutrient}</Title>
+        <ModalContent>
+            <ModalTitle>{nutrient}</ModalTitle>
+            <ModalBody>
             {doses.map(d => {
                 const nutrientAmount = getProductDoseNutrientAmount(d, nutrient)
                 return (
-                    <Row>
+                    <Row key={`${d.product.name}-${d.grams}-${d.servings}`}>
                         <Size>{d.servings ? `${d.servings} serv` : `${d.grams}g ` }</Size>
                         {d.product.name}
                         <Size/>
@@ -39,6 +32,7 @@ export default function SuppliedNutrientsBreakdown({ doses, nutrient }) {
                     </Row>
                 )
             })}
-        </Container>
+            </ModalBody>
+        </ModalContent>
     )
 }
