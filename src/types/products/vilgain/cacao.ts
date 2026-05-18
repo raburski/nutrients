@@ -1,4 +1,4 @@
-import { Macronutrient, Micronutrient, NutrientDose, NutrientUnit, Product, ProductDose } from "../../nutrient";
+import { Macronutrient, Micronutrient, NutrientDose, NutrientUnit, Product } from "../../nutrient";
 
 const cacaoNutrients: NutrientDose[] = [
     { nutrient: Macronutrient.Fat, amount: { value: 11, unit: NutrientUnit.G } },

@@ -2,7 +2,6 @@ import { NutrientDose, Product, Nutrient, NutrientUnit, Micronutrient, Macronutr
 import {
 	ProductSourceDefinition,
 	ProductSourceParser,
-	PRODUCT_SOURCES,
 	getProductSource,
 } from "./productSources"
 import {
@@ -12,7 +11,6 @@ import {
 	hasSourceCache,
 	needsSourceDownload,
 	getCachedSourceIds,
-	getSourceCacheStatus,
 } from "./productSourceDb"
 
 export type { SourceCacheStatus } from "./productSourceDb"
@@ -316,4 +314,5 @@ export class ProductsDatabase {
 	}
 }
 
-export default new ProductsDatabase()
+const productsDatabase = new ProductsDatabase()
+export default productsDatabase

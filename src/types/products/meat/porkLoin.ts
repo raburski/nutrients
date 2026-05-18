@@ -1,4 +1,4 @@
-import { Macronutrient, Micronutrient, NutrientDose, NutrientUnit, Product, ProductDose } from "../../nutrient";
+import { Macronutrient, NutrientDose, NutrientUnit, Product } from "../../nutrient";
 
 const nutrients: NutrientDose[] = [
     { nutrient: Macronutrient.Carbohydrate, amount: { value: 0, unit: NutrientUnit.G } },

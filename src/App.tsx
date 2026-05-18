@@ -1,10 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import { setup as setupGoober, styled } from 'goober'
-import { NutrientAmount, NutrientDose, NutrientUnit, allNutrients, Micronutrient, ProductDose, Product, Nutrient } from "./types/nutrient";
+import { NutrientUnit, allNutrients, ProductDose, Product, Nutrient } from "./types/nutrient";
 import { nutrientsMan32 } from "./types/doses";
-import { athelticGreensDoses, atheticGreensOneServing, allProducts } from "./types/products";
+import { atheticGreensOneServing, allProducts } from "./types/products";
 import NutrientList from "./NutrientList";
 import productsDatabase from "./fdc";
 import useDebouncedInput from "./useDebouncedInput";
@@ -135,7 +134,7 @@ function useProductDatabaseSync(enabledSourceIds: string[], syncKey: number) {
 
     run()
     return () => { cancelled = true }
-  }, [enabledSourceIds.join(","), syncKey])
+  }, [enabledSourceIds, syncKey])
 
   return { fetching, progress, revision, syncFailed }
 }
@@ -164,7 +163,7 @@ function App() {
     return enabledProductSources.filter((id: string) => !!getProductSource(id))
   }, [enabledProductSources])
   const { fetching: fetchingDatabase, progress: fetchProgress, revision: databaseRevision, syncFailed } = useProductDatabaseSync(activeProductSources, sourcesSyncKey)
-  const [searchPhrase, onSearchChange, setSearchPhrase] = useDebouncedInput()
+  const [searchPhrase, onSearchChange] = useDebouncedInput()
   const [selectedNutrient, setSelectedNutrient] = useState()
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>()
   const [sections, setSections] = useStorage('sections', DEFAULT_SECTIONS)
@@ -182,15 +181,16 @@ function App() {
   const [sectionNames, setSectionNames] = useStorage('sectionNames', Object.keys(sections))
 
   useEffect(() => {
-    const valid = getDefaultResultSourceFilters(activeProductSources)
-    const current = Array.isArray(resultSourceFilters)
-      ? resultSourceFilters.filter((id: string) => valid.includes(id))
-      : []
-    const added = valid.filter(id => !current.includes(id))
-    if (added.length) {
-      setResultSourceFilters([...current, ...added])
-    }
-  }, [activeProductSources.join(",")])
+    setResultSourceFilters((current: string[]) => {
+      const valid = getDefaultResultSourceFilters(activeProductSources)
+      const selected = Array.isArray(current)
+        ? current.filter((id: string) => valid.includes(id))
+        : []
+      const added = valid.filter(id => !selected.includes(id))
+      if (!added.length) return current
+      return [...selected, ...added]
+    })
+  }, [activeProductSources, setResultSourceFilters])
 
   const activeResultSourceFilters = useMemo(() => {
     const valid = getDefaultResultSourceFilters(activeProductSources)
@@ -282,7 +282,7 @@ function App() {
   async function onUploadClick() {
     const file = await uploadFile('json')
     const meals = await JSON.parse(file)
-    const newMealNames = Object.keys(meals).forEach(name => {
+    Object.keys(meals).forEach(name => {
       if (sections[name]) {
         meals[`${name}_`] = meals[name]
         delete meals[name]
@@ -360,10 +360,12 @@ function App() {
   const customMatchingNutrient = selectedNutrient ? filterProductsByNutrient(customProducts, selectedNutrient as Nutrient) : []
   const productsFound = useMemo(() => {
     if (!searchPhrase) return undefined
+    void databaseRevision
     return productsDatabase.getFood(searchPhrase as any as string)
   }, [searchPhrase, databaseRevision])
   const topNutrientProducts = useMemo(() => {
     if (!selectedNutrient) return DEFAULT_SEARCH_LIST
+    void databaseRevision
     return productsDatabase.getFoodsWithMost(selectedNutrient as Nutrient, 200)
   }, [selectedNutrient, databaseRevision])
   const baseDisplayProducts = productsFound ? productsFound : topNutrientProducts

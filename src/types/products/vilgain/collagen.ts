@@ -1,4 +1,4 @@
-import { Macronutrient, Micronutrient, NutrientDose, NutrientUnit, Product, ProductDose } from "../../nutrient";
+import { Macronutrient, NutrientDose, NutrientUnit, Product } from "../../nutrient";
 
 // Dose: 10g/day
 

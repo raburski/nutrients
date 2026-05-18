@@ -20,9 +20,12 @@ function readStoredValue(storeName, defaultValue) {
 export function useStorage(storeName, defaultValue) {
 	const [value, setStateValue] = useState(() => readStoredValue(storeName, defaultValue))
 	function setStoredValue(newValue) {
-		if (newValue === undefined) return
-		localStorage.setItem(storeName, JSON.stringify(newValue))
-		setStateValue(newValue)
+		setStateValue(prev => {
+			const next = typeof newValue === "function" ? newValue(prev) : newValue
+			if (next === undefined) return prev
+			localStorage.setItem(storeName, JSON.stringify(next))
+			return next
+		})
 	}
 	return [value, setStoredValue]
 }

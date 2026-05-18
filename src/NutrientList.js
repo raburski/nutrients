@@ -1,5 +1,5 @@
 import { styled } from "goober";
-import { Micronutrient, NutrientAmount, NutrientDose, NutrientUnit, allNutrients, nutrientsToxicity, waterSoluableNutrients } from "./types/nutrient";
+import { Micronutrient, allNutrients, nutrientsToxicity, waterSoluableNutrients } from "./types/nutrient";
 import { calcCalorieDoes, subAmounts } from "./nutrients";
 import { allDosesNutrients } from "./types/doses";
 

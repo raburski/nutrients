@@ -1,4 +1,4 @@
-import { Macronutrient, Micronutrient, NutrientDose, NutrientUnit, Product, ProductDose } from "../../nutrient";
+import { Micronutrient, NutrientDose, NutrientUnit, Product } from "../../nutrient";
 
 // serving = 3 capsules
 

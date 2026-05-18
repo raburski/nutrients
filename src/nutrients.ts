@@ -1,10 +1,12 @@
-import { Micronutrient, Nutrient, NutrientAmount, NutrientDose, NutrientUnit, ProductDose } from "./types/nutrient"
+import { Nutrient, NutrientAmount, NutrientDose, NutrientUnit, ProductDose } from "./types/nutrient"
 
 const UNIT_CONVERSION_MATRIX: any = {
   [NutrientUnit.G]: {
-    [NutrientUnit.MG]: 1000
+    [NutrientUnit.MG]: 1000,
+    [NutrientUnit.MCG]: 1000000,
   },
   [NutrientUnit.MCG]: {
+    [NutrientUnit.G]: 0.000001,
     [NutrientUnit.MG]: 0.001,
     [NutrientUnit.MCG_DFE]: 1,
     [NutrientUnit.MCG_RAE]: 1,

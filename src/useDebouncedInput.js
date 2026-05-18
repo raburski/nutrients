@@ -11,6 +11,6 @@ export default function useDebouncedInput(debounce = 500) {
             setDelayedValue(currentValue)
         }, debounce)
         return () => clearTimeout(debounced)
-    }, [currentValue])
+    }, [currentValue, debounce])
     return [delayedValue, onChange, setCurrentValue]
 }

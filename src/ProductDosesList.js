@@ -104,7 +104,7 @@ function ProductDoseRow({ productDose, onRemoveClick, onClick, onValueChange }) 
         if (value !== undefined) {
             onValueChange(productDose, value)
         }
-    }, [value])
+    }, [value, onValueChange, productDose])
     return (
         <Row onClick={onClick}><RowTitle>{truncateString(productDose.product.name, 50)}</RowTitle> <RowValueInput type="text" defaultValue={initialValue} onFocus={cancelEvent} onClick={cancelEvent} onChange={onInputValueChange}/> {unit}{onRemoveClick ? <Button type="button" variant="ghost" size="small" onClick={onRemoveClick}>✕</Button> : null }</Row>
     )
