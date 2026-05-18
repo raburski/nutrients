@@ -356,12 +356,10 @@ function App() {
     setSectionNames(newSectionNames)
   }
 
-  const customMatchingSearch = searchPhrase ? filterProductsByName(customProducts, searchPhrase as any as string) : []
-  const customMatchingNutrient = selectedNutrient ? filterProductsByNutrient(customProducts, selectedNutrient as Nutrient) : []
   const productsFound = useMemo(() => {
     if (!searchPhrase) return undefined
     void databaseRevision
-    return productsDatabase.getFood(searchPhrase as any as string)
+    return productsDatabase.getFood(searchPhrase)
   }, [searchPhrase, databaseRevision])
   const topNutrientProducts = useMemo(() => {
     if (!selectedNutrient) return DEFAULT_SEARCH_LIST
@@ -369,13 +367,18 @@ function App() {
     return productsDatabase.getFoodsWithMost(selectedNutrient as Nutrient, 200)
   }, [selectedNutrient, databaseRevision])
   const baseDisplayProducts = productsFound ? productsFound : topNutrientProducts
-  const customForList = searchPhrase ? customMatchingSearch : (selectedNutrient ? customMatchingNutrient : customProducts)
   const displayProducts = useMemo(() => {
-    const merged = [...customForList, ...(baseDisplayProducts || [])]
+    const curatedForList = searchPhrase
+      ? filterProductsByName(allProducts, searchPhrase)
+      : (selectedNutrient ? filterProductsByNutrient(allProducts, selectedNutrient as Nutrient) : [])
+    const customForList = searchPhrase
+      ? filterProductsByName(customProducts, searchPhrase)
+      : (selectedNutrient ? filterProductsByNutrient(customProducts, selectedNutrient as Nutrient) : customProducts)
+    const merged = [...curatedForList, ...customForList, ...(baseDisplayProducts || [])]
     return merged.filter(product =>
       activeResultSourceFilters.includes(getProductListFilterId(product))
     )
-  }, [customForList, baseDisplayProducts, activeResultSourceFilters])
+  }, [searchPhrase, selectedNutrient, customProducts, baseDisplayProducts, activeResultSourceFilters])
 
   const allSectionsProductDoses = sectionNames.map((name: string) => selectedSections.includes(name) ? sections[name] : null).filter(Boolean).flatMap((f: any) => f) as ProductDose[]
   const allProductNutrientDoses = addNutrientDoses(allSectionsProductDoses.flatMap(getNutrientDosesFromProductDose))

@@ -27,6 +27,7 @@ import mieloneWolowe from './biedronka/mieloneWolowe'
 import vilgainMultivitaminCmplex from './vilgain/multivitaminComplex'
 import huelGreens from './huel/greens'
 import huelBlack from './huel/black'
+import diamondGrainsAlmondHorizon from './diamondGrainsAlmondHorizon'
 
 export { atheticGreensOneServing, athelticGreensDoses } from './ag1'
 
@@ -60,5 +61,6 @@ export const allProducts = [
     mieloneWolowe,
     vilgainMultivitaminCmplex,
     huelGreens,
-    huelBlack
+    huelBlack,
+    diamondGrainsAlmondHorizon,
 ]
