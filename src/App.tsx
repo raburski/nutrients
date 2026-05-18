@@ -8,7 +8,7 @@ import { athelticGreensDoses, atheticGreensOneServing, allProducts } from "./typ
 import NutrientList from "./NutrientList";
 import productsDatabase from "./fdc";
 import useDebouncedInput from "./useDebouncedInput";
-import TextField from "./TextField";
+import TextField, { FieldSelect } from "./TextField";
 import ProductList from "./ProductList";
 import ProductDosesList from "./ProductDosesList";
 import Modal from "./Modal";
@@ -23,8 +23,10 @@ import Spacer from "./Spacer";
 import SuppliedNutrientsBreakdown from "./SuppliedNutrientsBreakdown"
 import AddProductForm from "./AddProductForm"
 import ProductSourcesModal from "./ProductSourcesModal"
+import SearchResultFiltersModal from "./SearchResultFiltersModal"
 import { filterProductsByName, filterProductsByNutrient, isCustomProduct } from "./customProducts"
-import { DEFAULT_ENABLED_SOURCE_IDS, getProductSource } from "./productSources"
+import { getProductListFilterId } from "./productSourceDisplay"
+import { DEFAULT_ENABLED_SOURCE_IDS, getDefaultResultSourceFilters, getProductSource } from "./productSources"
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd"
 
 setupGoober(React.createElement)
@@ -49,6 +51,15 @@ const Row = styled('div')`
   flex-direction: row;
   flex: 1;
   white-space: pre;
+`
+
+const NutrientFilterRow = styled('div')`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  min-width: 0;
 `
 
 const SectionTitle = styled('div')`
@@ -162,8 +173,31 @@ function App() {
   const [isShowingCart, setIsShowingCart] = useState(false)
   const [isShowingAddProduct, setIsShowingAddProduct] = useState(false)
   const [isShowingProductSources, setIsShowingProductSources] = useState(false)
+  const [isShowingSearchFilters, setIsShowingSearchFilters] = useState(false)
   const [customProducts, setCustomProducts] = useStorage('customProducts', [] as Product[])
+  const [resultSourceFilters, setResultSourceFilters] = useStorage(
+    'resultSourceFilters',
+    getDefaultResultSourceFilters(DEFAULT_ENABLED_SOURCE_IDS)
+  )
   const [sectionNames, setSectionNames] = useStorage('sectionNames', Object.keys(sections))
+
+  useEffect(() => {
+    const valid = getDefaultResultSourceFilters(activeProductSources)
+    const current = Array.isArray(resultSourceFilters)
+      ? resultSourceFilters.filter((id: string) => valid.includes(id))
+      : []
+    const added = valid.filter(id => !current.includes(id))
+    if (added.length) {
+      setResultSourceFilters([...current, ...added])
+    }
+  }, [activeProductSources.join(",")])
+
+  const activeResultSourceFilters = useMemo(() => {
+    const valid = getDefaultResultSourceFilters(activeProductSources)
+    if (!Array.isArray(resultSourceFilters)) return valid
+    const selected = resultSourceFilters.filter((id: string) => valid.includes(id))
+    return selected.length > 0 ? selected : valid
+  }, [resultSourceFilters, activeProductSources])
 
   const onCartClick = () => setIsShowingCart(!isShowingCart)
 
@@ -234,7 +268,15 @@ function App() {
     setIsShowingProductSources(false)
     setSyncErrorDismissed(false)
     setEnabledProductSources(sourceIds)
+    const valid = getDefaultResultSourceFilters(sourceIds)
+    const pruned = activeResultSourceFilters.filter((id: string) => valid.includes(id))
+    setResultSourceFilters(pruned.length > 0 ? pruned : valid)
     setSourcesSyncKey(key => key + 1)
+  }
+
+  const onSearchFiltersSave = (resultFilters: string[]) => {
+    setIsShowingSearchFilters(false)
+    setResultSourceFilters(resultFilters)
   }
 
   async function onUploadClick() {
@@ -326,7 +368,12 @@ function App() {
   }, [selectedNutrient, databaseRevision])
   const baseDisplayProducts = productsFound ? productsFound : topNutrientProducts
   const customForList = searchPhrase ? customMatchingSearch : (selectedNutrient ? customMatchingNutrient : customProducts)
-  const displayProducts = [...customForList, ...(baseDisplayProducts || [])]
+  const displayProducts = useMemo(() => {
+    const merged = [...customForList, ...(baseDisplayProducts || [])]
+    return merged.filter(product =>
+      activeResultSourceFilters.includes(getProductListFilterId(product))
+    )
+  }, [customForList, baseDisplayProducts, activeResultSourceFilters])
 
   const allSectionsProductDoses = sectionNames.map((name: string) => selectedSections.includes(name) ? sections[name] : null).filter(Boolean).flatMap((f: any) => f) as ProductDose[]
   const allProductNutrientDoses = addNutrientDoses(allSectionsProductDoses.flatMap(getNutrientDosesFromProductDose))
@@ -343,11 +390,23 @@ function App() {
             <EmojiButton onClick={() => setIsShowingAddProduct(true)} title="Add custom product">📝</EmojiButton>
           </SectionTitle>
           <TextField onChange={onSearchChange} style={{alignSelf: 'stretch', marginBottom: 12}}/>
-          <select onChange={onNutrientSelectChange}>
-            <option value=""> - select nutrient - </option>
-            {allNutrients.map(n => <option value={n}>{n}</option>)}
-          </select>
-          {displayProducts ? <ProductList products={displayProducts} highlightNutrient={selectedNutrient} onAddClick={onAddProductClick} onClick={onProductClick}/> : null}
+          <NutrientFilterRow>
+            <FieldSelect
+              value={selectedNutrient || ""}
+              onChange={onNutrientSelectChange}
+              style={selectedNutrient ? undefined : { color: "#707070" }}
+            >
+              <option value="">Select nutrient…</option>
+              {allNutrients.map(n => <option key={n} value={n}>{n}</option>)}
+            </FieldSelect>
+            <EmojiButton
+              onClick={() => setIsShowingSearchFilters(true)}
+              title="Show in search results"
+            >
+              🎛️
+            </EmojiButton>
+          </NutrientFilterRow>
+          <ProductList products={displayProducts} highlightNutrient={selectedNutrient} onAddClick={onAddProductClick} onClick={onProductClick}/>
         </Column>
         <Column>
           <SectionTitle>
@@ -420,10 +479,18 @@ function App() {
       </Modal>
       <Modal isOpen={isShowingProductSources} onClickAway={() => setIsShowingProductSources(false)}>
         <ProductSourcesModal
-          enabledSourceIds={enabledProductSources}
+          enabledSourceIds={activeProductSources}
           cacheRevision={databaseRevision}
           onSave={onProductSourcesSave}
           onCancel={() => setIsShowingProductSources(false)}
+        />
+      </Modal>
+      <Modal isOpen={isShowingSearchFilters} onClickAway={() => setIsShowingSearchFilters(false)}>
+        <SearchResultFiltersModal
+          enabledSourceIds={activeProductSources}
+          resultSourceFilterIds={activeResultSourceFilters}
+          onSave={onSearchFiltersSave}
+          onCancel={() => setIsShowingSearchFilters(false)}
         />
       </Modal>
       <Modal isOpen={isShowingCart} onClickAway={onCartClick}>

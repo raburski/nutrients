@@ -1,4 +1,4 @@
-export type ProductSourceParser = "fdc-survey" | "fdc-foundation" | "paleo-robbie"
+export type ProductSourceParser = "fdc-survey" | "fdc-foundation" | "paleo-robbie" | "blueprint"
 
 export interface ProductSourceDefinition {
 	id: string
@@ -38,12 +38,64 @@ export const PRODUCT_SOURCES: ProductSourceDefinition[] = [
 		parser: "paleo-robbie",
 		faviconDomain: "paleorobbie.com",
 	},
+	{
+		id: "blueprint",
+		name: "Blueprint Bryan Johnson",
+		description: "Supplements and nutrition products from blueprint.bryanjohnson.com (built from local scrape).",
+		file: "/blueprint_products.json",
+		approximateSize: "~100 KB",
+		parser: "blueprint",
+		faviconDomain: "blueprint.bryanjohnson.com",
+	},
 ]
 
 export const DEFAULT_ENABLED_SOURCE_IDS = PRODUCT_SOURCES.map(source => source.id)
 
 export const ENABLED_SOURCES_STORAGE_KEY = "enabledProductSources"
 
+export const CURATED_PRODUCT_FILTER_ID = "curated"
+export const CUSTOM_PRODUCT_FILTER_ID = "custom"
+
+export interface SearchResultFilterOption {
+	id: string
+	name: string
+	description: string
+	faviconDomain?: string
+	emoji?: string
+}
+
+export const SEARCH_RESULT_STATIC_FILTERS: SearchResultFilterOption[] = [
+	{
+		id: CURATED_PRODUCT_FILTER_ID,
+		name: "Built-in catalog",
+		description: "Products bundled with this app (supplements, staples, etc.).",
+		emoji: "📋",
+	},
+	{
+		id: CUSTOM_PRODUCT_FILTER_ID,
+		name: "Custom products",
+		description: "Products you added with the 📝 button.",
+		emoji: "📝",
+	},
+]
+
 export function getProductSource(id: string): ProductSourceDefinition | undefined {
 	return PRODUCT_SOURCES.find(source => source.id === id)
+}
+
+export function getDefaultResultSourceFilters(enabledSourceIds: string[]): string[] {
+	return [CURATED_PRODUCT_FILTER_ID, CUSTOM_PRODUCT_FILTER_ID, ...enabledSourceIds]
+}
+
+export function getSearchResultFilterOptions(enabledSourceIds: string[]): SearchResultFilterOption[] {
+	const dynamic = enabledSourceIds
+		.map(id => getProductSource(id))
+		.filter((source): source is ProductSourceDefinition => !!source)
+		.map(source => ({
+			id: source.id,
+			name: source.name,
+			description: source.description,
+			faviconDomain: source.faviconDomain,
+		}))
+	return [...SEARCH_RESULT_STATIC_FILTERS, ...dynamic]
 }

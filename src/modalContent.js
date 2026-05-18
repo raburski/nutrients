@@ -28,6 +28,20 @@ export const ModalBody = styled('div')`
 	gap: 10px;
 `
 
+export const ModalSectionTitle = styled('h3')`
+	margin: 8px 0 0;
+	font-size: 13px;
+	font-weight: 700;
+	color: #303030;
+`
+
+export const ModalSectionHint = styled('div')`
+	margin: -4px 0 4px;
+	font-size: 11px;
+	line-height: 1.4;
+	color: #808080;
+`
+
 export const ModalActions = styled('div')`
 	display: flex;
 	flex-direction: row;

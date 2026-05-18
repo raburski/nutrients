@@ -20,15 +20,11 @@ import mullermilchProtein from './other/mullermilchProtein'
 import studentska from './other/studentska'
 import snickersBar from './other/snickers'
 import wedelMleczna from './other/wedelMleczna'
-import blueprintEssentialGel from './blueprint/essentialGel'
-import blueprintEssentialCapsules from './blueprint/essentialCapsules'
-import blueprintLongevityMix from './blueprint/longevityMix'
 import porkLoin from './meat/porkLoin'
 import biedronkaGoActiveGranolaBar from './biedronka/goActiveGranolaBar'
 import biedronkaSkyrJagoda from './biedronka/fruvitaSkyrJagoda'
 import piatnicaSmietana18 from './biedronka/piatnicaSmietana18'
 import mieloneWolowe from './biedronka/mieloneWolowe'
-import vitC from './blueprint/vitC'
 import vilgainMultivitaminCmplex from './vilgain/multivitaminComplex'
 import huelGreens from './huel/greens'
 import huelBlack from './huel/black'
@@ -58,15 +54,11 @@ export const allProducts = [
     studentska,
     snickersBar,
     wedelMleczna,
-    blueprintEssentialGel,
-    blueprintEssentialCapsules,
-    blueprintLongevityMix,
     porkLoin,
     biedronkaGoActiveGranolaBar,
     biedronkaSkyrJagoda,
     // piatnicaSmietana18,
     mieloneWolowe,
-    vitC,
     vilgainMultivitaminCmplex,
     huelGreens,
     huelBlack

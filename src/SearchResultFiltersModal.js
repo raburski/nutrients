@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react"
 import { styled } from "goober"
 import Button from "./Button"
-import { PRODUCT_SOURCES } from "./productSources"
-import { getSourceCacheStatus } from "./productSourceDb"
+import {
+	getDefaultResultSourceFilters,
+	getSearchResultFilterOptions,
+} from "./productSources"
 import { getFaviconUrl } from "./productSourceDisplay"
 import {
 	ModalContent,
@@ -59,11 +61,6 @@ const SourceDescription = styled('div')`
 	color: #606060;
 `
 
-const SourceMeta = styled('div')`
-	font-size: 11px;
-	color: #808080;
-`
-
 const Checkbox = styled('input')`
 	margin-top: 2px;
 	width: 16px;
@@ -81,90 +78,91 @@ const SourceIcon = styled('img')`
 	background-color: #eee;
 `
 
-function cacheStatusLabel(status) {
-	if (status === "cached") return "Downloaded"
-	return "Not downloaded yet"
+const SourceEmoji = styled('span')`
+	font-size: 16px;
+	line-height: 1;
+`
+
+function SourceNameWithIcon({ filter }) {
+	if (filter.faviconDomain) {
+		return (
+			<>
+				<SourceIcon src={getFaviconUrl(filter.faviconDomain)} alt="" />
+				{filter.name}
+			</>
+		)
+	}
+	if (filter.emoji) {
+		return (
+			<>
+				<SourceEmoji>{filter.emoji}</SourceEmoji>
+				{filter.name}
+			</>
+		)
+	}
+	return filter.name
 }
 
-export default function ProductSourcesModal({
+export default function SearchResultFiltersModal({
 	enabledSourceIds,
+	resultSourceFilterIds,
 	onSave,
 	onCancel,
-	cacheRevision,
 }) {
-	const [selectedIds, setSelectedIds] = useState(enabledSourceIds)
+	const [selectedIds, setSelectedIds] = useState(resultSourceFilterIds)
 	const [error, setError] = useState("")
-	const [cacheStatuses, setCacheStatuses] = useState({})
 
 	useEffect(() => {
-		setSelectedIds(enabledSourceIds)
+		setSelectedIds(resultSourceFilterIds)
 		setError("")
-	}, [enabledSourceIds])
+	}, [resultSourceFilterIds])
 
-	useEffect(() => {
-		let cancelled = false
-
-		async function loadStatuses() {
-			const statuses = {}
-			for (const source of PRODUCT_SOURCES) {
-				statuses[source.id] = await getSourceCacheStatus(source.id)
-			}
-			if (!cancelled) setCacheStatuses(statuses)
-		}
-
-		loadStatuses()
-		return () => { cancelled = true }
-	}, [cacheRevision])
-
-	function toggleSource(sourceId) {
+	function toggleFilter(filterId) {
 		setSelectedIds(current => {
-			if (current.includes(sourceId)) {
-				return current.filter(id => id !== sourceId)
+			if (current.includes(filterId)) {
+				return current.filter(id => id !== filterId)
 			}
-			return [...current, sourceId]
+			return [...current, filterId]
 		})
 	}
 
 	function onSubmit(e) {
 		e.preventDefault()
-		if (selectedIds.length === 0) {
-			setError("Select at least one product database.")
+		const valid = getDefaultResultSourceFilters(enabledSourceIds)
+		const resultFilters = selectedIds.filter(id => valid.includes(id))
+		if (resultFilters.length === 0) {
+			setError("Select at least one source to show in search results.")
 			return
 		}
-		onSave(selectedIds)
+		onSave(resultFilters)
 	}
+
+	const filterOptions = getSearchResultFilterOptions(enabledSourceIds)
 
 	return (
 		<form onSubmit={onSubmit}>
-			<ModalContent style={{ minWidth: 380 }}>
-				<ModalTitle>Product databases</ModalTitle>
+			<ModalContent style={{ minWidth: 360 }}>
+				<ModalTitle>Show in search results</ModalTitle>
 				<ModalSubtitle>
-					Choose which sources to download and use for search. Data is stored in IndexedDB in your browser.
+					Choose which product sources appear in the list below the nutrient selector.
 				</ModalSubtitle>
 				<ModalScroll>
 					<ModalBody>
-						{PRODUCT_SOURCES.map(source => {
-							const checked = selectedIds.includes(source.id)
-							const cacheStatus = cacheStatuses[source.id] || "missing"
+						{filterOptions.map(filter => {
+							const checked = selectedIds.includes(filter.id)
 							return (
-								<SourceRow key={`${source.id}-${cacheRevision}`} $checked={checked}>
+								<SourceRow key={filter.id} $checked={checked}>
 									<Checkbox
 										type="checkbox"
 										checked={checked}
-										onChange={() => toggleSource(source.id)}
+										onChange={() => toggleFilter(filter.id)}
 										onClick={e => e.stopPropagation()}
 									/>
 									<SourceText>
 										<SourceName>
-											<SourceIcon src={getFaviconUrl(source.faviconDomain)} alt="" />
-											{source.name}
+											<SourceNameWithIcon filter={filter} />
 										</SourceName>
-										<SourceDescription>{source.description}</SourceDescription>
-										<SourceMeta>
-											{source.approximateSize}
-											{" · "}
-											{cacheStatusLabel(cacheStatus)}
-										</SourceMeta>
+										<SourceDescription>{filter.description}</SourceDescription>
 									</SourceText>
 								</SourceRow>
 							)
@@ -174,7 +172,7 @@ export default function ProductSourcesModal({
 				{error ? <ModalError>{error}</ModalError> : null}
 				<ModalActions>
 					<Button type="button" onClick={onCancel}>Cancel</Button>
-					<Button type="submit" variant="primary">Save &amp; sync</Button>
+					<Button type="submit" variant="primary">Save</Button>
 				</ModalActions>
 			</ModalContent>
 		</form>

@@ -244,7 +244,7 @@ export class ProductsDatabase {
 		const json = await response.json()
 
 		let products: Product[]
-		if (source.parser === "paleo-robbie") {
+		if (source.parser === "paleo-robbie" || source.parser === "blueprint") {
 			products = Array.isArray(json) ? json : (json.products || [])
 		} else if (source.parser === "fdc-foundation") {
 			const foods = extractFoodsFromJson(json, source.parser)
